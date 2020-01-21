@@ -2,13 +2,13 @@ plugins {
     id 'java'
     id "edu.sc.seis.macAppBundle" version "2.3.0"
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.0.8'
+//    id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 group 'com.simaanc'
 version '3.0'
 
-sourceCompatibility = 13
+sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -18,10 +18,10 @@ repositories {
     }
 }
 
-javafx {
+/*javafx {
     version = "13"
     modules = [ 'javafx.controls', 'javafx.base', 'javafx.graphics', 'javafx.fxml']
-}
+}*/
 
 task fatJar(type: Jar) {
     manifest {
