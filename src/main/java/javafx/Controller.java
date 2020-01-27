@@ -239,7 +239,6 @@ public class Controller implements Initializable {
                 p.onSave();
             }
         });
-
     }
 
     @FXML

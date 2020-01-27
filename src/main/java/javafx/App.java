@@ -86,7 +86,6 @@ public class App extends Application {
 
         //tk.setMenuBar(primaryStage, bar);
 
-
         surface.stage = primaryStage;
         Controller.stage = controlsStage;
     }
