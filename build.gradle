@@ -20,7 +20,7 @@ repositories {
 
 javafx {
     version = "11.0.2"
-    modules = [ 'javafx.controls', 'javafx.base', 'javafx.graphics', 'javafx.fxml']
+    modules = [ 'javafx.controls', 'javafx.base', 'javafx.graphics', 'javafx.fxml', 'javafx.web']
 }
 
 task fatJar(type: Jar) {
@@ -37,6 +37,7 @@ task fatJar(type: Jar) {
 macAppBundle {
     mainClassName = "com.simaanc.main.Main"
     icon = "/Users/339873/IdeaProjects/structured/src/main/resources/sketch.icns"
+    jreHome = "/Library/Java/JavaVirtualMachines/jdk-11.0.5.jdk/Contents/Home"
     bundleJRE = true
 }
 
