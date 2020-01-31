@@ -8,8 +8,6 @@ plugins {
 group 'com.simaanc'
 version '3.0'
 
-sourceCompatibility = 11
-
 repositories {
     mavenCentral()
 
@@ -20,7 +18,7 @@ repositories {
 
 javafx {
     version = "11.0.2"
-    modules = [ 'javafx.controls', 'javafx.base', 'javafx.graphics', 'javafx.fxml', 'javafx.web']
+    modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml',  'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web']
 }
 
 task fatJar(type: Jar) {
@@ -43,7 +41,6 @@ macAppBundle {
 
 dependencies {
     compile 'com.jfoenix:jfoenix:9.0.8'
-    compile "de.codecentric.centerdevice:centerdevice-nsmenufx:2.1.7"
     compile fileTree(include: ['*.jar'], dir: 'libs') as Object[]
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

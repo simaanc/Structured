@@ -2,25 +2,26 @@ package processing;
 
 import javafx.App;
 import javafx.Controller;
-import javafx.scene.canvas.Canvas;
-import javafx.stage.Stage;
+import javafx.application.Application;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import processing.core.PApplet;
 import processing.core.PSurface;
 import processing.javafx.PSurfaceFX;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Structured extends PApplet {
 
-    private boolean guifix;
     public boolean hsbLabeled;
     public boolean display = false;
     public boolean generateCP5;
@@ -81,8 +82,6 @@ public class Structured extends PApplet {
     private File macSavesdir = new File(macDir + File.separator + "Saves");
     private File imageSaveCountTXT = new File(macDatadir + File.separator + "Data" + File.separator + "imageSaveCount.txt");
     private File lastUsedGenPatternTXT = new File(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
-    private String[] prefs;
-    private String[] lastuv;
     private String[] defaultPrefs;
     private String[] imageSaveCount;
     public static Controller c;
@@ -172,25 +171,19 @@ public class Structured extends PApplet {
         PSurface genericSurface = g.createSurface();
         PSurfaceFX fxSurface = (PSurfaceFX) genericSurface;
         fxSurface.sketch = this;
-        App.surface = fxSurface;
+        App.surface = fxSurface; // todo remove?
         Controller.surface = fxSurface;
 
-        try {
-            //Application.launch(App.class);
-            new App().start(new Stage());
-        } catch (Exception ex) {
-            Logger.getLogger(Structured.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        new Thread(() -> Application.launch(App.class)).start();
 
         while (fxSurface.stage == null) {
             try {
                 Thread.sleep(5);
-            } catch (InterruptedException ignored) {
+            } catch (InterruptedException e) {
             }
         }
 
         this.surface = fxSurface;
-        Canvas canvas = (Canvas) surface.getNative();
         return surface;
     }
 
@@ -208,10 +201,12 @@ public class Structured extends PApplet {
         randomShapeG = 255;
         randomShapeB = 255;
 
-        prefs = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastusedvalues.txt");
-        lastuv = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
+        String[] prefs = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastusedvalues.txt");
+        String[] lastuv = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
 
         OSCheck();
+
+
     }
 
     @Override
@@ -235,8 +230,6 @@ public class Structured extends PApplet {
             randomShapeB = startShapeB;
 
         }
-
-        colorMode(HSB);
     }
 
     public void onGenerate() {
@@ -493,100 +486,78 @@ public class Structured extends PApplet {
                             textSize(50);
                             if (oldGenC) {
                                 line(0, 0, 0, -drawLength);
-                                guifix = false;
                             } else {
                                 line(0, 0, currentW * (size), currentH * (size));
-                                guifix = false;
                             }
                         }
                         if (toggleSquare) {
                             if (toggleSquareFill) {
                                 fill(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
-                                guifix = false;
                             } else {
                                 noFill();
-                                guifix = false;
                             }
                             if (oldGenC) {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 rect(0, 0, -drawLength, -drawLength);
-                                guifix = false;
                             } else {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 rect(0, 0, currentW * (size), currentH * (size));
-                                guifix = false;
                             }
                         }
                         if (toggleCircle) {
                             if (toggleCircleFill) {
                                 fill(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
-                                guifix = false;
                             } else {
                                 noFill();
-                                guifix = false;
                             }
                             if (oldGenC) {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 ellipse(0, 0, -drawLength, -drawLength);
-                                guifix = false;
                             } else {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 ellipse(0, 0, currentW * (size), currentH * (size));
-                                guifix = false;
                             }
                         }
                         if (toggleTriangle) {
                             if (toggleTriangleFill) {
                                 fill(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
-                                guifix = false;
                             } else {
                                 noFill();
-                                guifix = false;
                             }
                             if (oldGenC) {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 tri(-drawLength, -drawLength);
-                                guifix = false;
                             } else {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 tri(currentW * (size), currentH * (size));
-                                guifix = false;
                             }
                         }
                         if (toggleHex) {
                             if (toggleHexFill) {
                                 fill(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
-                                guifix = false;
                             } else {
                                 noFill();
-                                guifix = false;
                             }
                             if (oldGenC) {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 hex(-drawLength, -drawLength);
-                                guifix = false;
                             } else {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 hex(currentW * (size), currentH * (size));
-                                guifix = false;
                             }
                         }
                         if (toggleCube) {
                             if (toggleCubeFill) {
                                 fill(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
-                                guifix = false;
                             } else {
                                 noFill();
-                                guifix = false;
                             }
                             if (oldGenC) {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 cube(-drawLength, -drawLength);
-                                guifix = false;
                             } else {
                                 stroke(color(randomShapeR, randomShapeG, randomShapeB, opacity), alpha);
                                 cube(currentW * (size), currentH * (size));
-                                guifix = false;
                             }
                         }
                     }
@@ -634,7 +605,6 @@ public class Structured extends PApplet {
                     repeats = (int) step - 48;
                 }
             }
-            guifix = true;
 
             // Unpush if we need too
             while (pushes > 0) {

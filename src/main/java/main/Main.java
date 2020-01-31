@@ -3,11 +3,9 @@ package main;
 import processing.Structured;
 import processing.core.PApplet;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
     public static void main(String[] args) {
-        PApplet.main(Structured.class);
+        PApplet.main(Structured.class, args);
     }
 }
