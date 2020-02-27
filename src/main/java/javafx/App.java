@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import main.Main;
 import processing.Structured;
 import processing.javafx.PSurfaceFX;
 
@@ -23,9 +24,10 @@ public class App extends Application {
         Stage controlsStage = new Stage();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ProcessingFX.fxml"));
 
-        Parent root = loader.load();
+        System.out.println("This should be working");
+        System.out.println(Controller.class.getResource("/ProcessingFX.fxml"));
+        Parent root = FXMLLoader.load(Controller.class.getResource("/ProcessingFX.fxml"));
         Controller.stage = controlsStage;
         Scene scene = new Scene(root, screenSize.getWidth(), screenSize.getHeight());
 

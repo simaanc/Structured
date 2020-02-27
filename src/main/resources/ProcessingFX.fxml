@@ -80,7 +80,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <JFXSlider fx:id="s_alpha" focusTraversable="false" max="255.0" min="1.0" prefHeight="16.0"
-                               prefWidth="291.0" stylesheets="@light-theme.css">
+                               prefWidth="291.0" stylesheets="@theme.css">
                         <opaqueInsets>
                             <Insets/>
                         </opaqueInsets>
@@ -120,7 +120,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <JFXSlider fx:id="s_complexity" focusTraversable="false" max="8000.0" min="500.0"
-                               stylesheets="@light-theme.css" value="1000.0">
+                               stylesheets="@theme.css" value="1000.0">
                         <opaqueInsets>
                             <Insets/>
                         </opaqueInsets>
@@ -159,7 +159,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
-                    <JFXSlider fx:id="s_stroke" focusTraversable="false" min="1.0" stylesheets="@light-theme.css">
+                    <JFXSlider fx:id="s_stroke" focusTraversable="false" min="1.0" stylesheets="@theme.css">
                         <opaqueInsets>
                             <Insets/>
                         </opaqueInsets>
@@ -198,7 +198,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <JFXSlider fx:id="s_scatter" focusTraversable="false" max="500.0" min="1.0"
-                               stylesheets="@light-theme.css">
+                               stylesheets="@theme.css">
                         <opaqueInsets>
                             <Insets/>
                         </opaqueInsets>
@@ -238,7 +238,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <JFXSlider fx:id="s_zoom" focusTraversable="false" max="5.0" min="1.0"
-                               stylesheets="@light-theme.css">
+                               stylesheets="@theme.css">
                         <opaqueInsets>
                             <Insets/>
                         </opaqueInsets>
@@ -276,7 +276,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
-                    <JFXSlider fx:id="s_lerp" focusTraversable="false" stylesheets="@light-theme.css"/>
+                    <JFXSlider fx:id="s_lerp" focusTraversable="false" stylesheets="@theme.css"/>
                     <Label text="Lerp" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">
                         <padding>
@@ -298,7 +298,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
-                    <JFXSlider fx:id="s_maxs" focusTraversable="false" min="1.0" stylesheets="@light-theme.css"
+                    <JFXSlider fx:id="s_maxs" focusTraversable="false" min="1.0" stylesheets="@theme.css"
                                value="20.0"/>
                     <Label text="Max Size" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">
@@ -321,7 +321,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
-                    <JFXSlider fx:id="s_mins" focusTraversable="false" min="1.0" stylesheets="@light-theme.css"
+                    <JFXSlider fx:id="s_mins" focusTraversable="false" min="1.0" stylesheets="@theme.css"
                                value="20.0"/>
                     <Label text="Min Size" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">
@@ -345,7 +345,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <JFXSlider fx:id="s_widthr" focusTraversable="false" max="1.0" min="0.01"
-                               stylesheets="@light-theme.css" value="0.5"/>
+                               stylesheets="@theme.css" value="0.5"/>
                     <Label text="Width Ratio" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">
                         <padding>
@@ -368,7 +368,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
                     <JFXSlider fx:id="s_heightr" focusTraversable="false" max="1.0" min="0.01"
-                               stylesheets="@light-theme.css" value="0.5"/>
+                               stylesheets="@theme.css" value="0.5"/>
                     <Label text="Height Ratio" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">
                         <padding>
@@ -405,7 +405,7 @@
                             <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         </rowConstraints>
                         <JFXSlider fx:id="s_gen" focusTraversable="false" majorTickUnit="1.0" max="10.0" min="1.0"
-                                   minorTickCount="0" snapToTicks="true" stylesheets="@light-theme.css">
+                                   minorTickCount="0" snapToTicks="true" stylesheets="@theme.css">
                             <opaqueInsets>
                                 <Insets/>
                             </opaqueInsets>
@@ -446,7 +446,7 @@
                             <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         </rowConstraints>
                         <JFXSlider fx:id="s_axiom" focusTraversable="false" max="5.0" min="1.0"
-                                   stylesheets="@light-theme.css">
+                                   stylesheets="@theme.css">
                             <opaqueInsets>
                                 <Insets/>
                             </opaqueInsets>

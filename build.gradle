@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id "edu.sc.seis.macAppBundle" version "2.3.0"
-    id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'application'
 }
 
 group 'com.simaanc'
@@ -21,21 +21,10 @@ javafx {
     modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml',  'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web']
 }
 
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'Gradle Jar File Example',
-                'Implementation-Version': version,
-                'Main-Class': 'main.Main'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
 macAppBundle {
     mainClassName = "com.simaanc.main.Main"
     icon = "/Users/339873/IdeaProjects/structured/src/main/resources/sketch.icns"
-    jreHome = "/Library/Java/JavaVirtualMachines/jdk-11.0.5.jdk/Contents/Home"
+    jreHome = "/Library/Java/JavaVirtualMachines/jdk-11.0.6.jdk/Contents/Home"
     bundleJRE = true
 }
 
