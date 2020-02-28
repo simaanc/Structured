@@ -15,15 +15,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import processing.Structured;
 import processing.javafx.PSurfaceFX;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -102,7 +96,6 @@ public class Controller implements Initializable {
         s_scatter.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.scatter = (int) Math.round(newValue.doubleValue());
             v_l_scatter.setText(String.valueOf(Math.round(newValue.doubleValue())));
-
         });
         s_zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.size = (int) Math.round(newValue.doubleValue());
