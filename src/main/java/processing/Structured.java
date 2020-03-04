@@ -2,23 +2,20 @@ package processing;
 
 import javafx.App;
 import javafx.Controller;
-import javafx.application.Application;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import javafx.scene.canvas.Canvas;
+import javafx.stage.Stage;
 import processing.core.PApplet;
 import processing.core.PSurface;
 import processing.javafx.PSurfaceFX;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Structured extends PApplet {
 
@@ -82,6 +79,8 @@ public class Structured extends PApplet {
     private File macSavesdir = new File(macDir + File.separator + "Saves");
     private File imageSaveCountTXT = new File(macDatadir + File.separator + "Data" + File.separator + "imageSaveCount.txt");
     private File lastUsedGenPatternTXT = new File(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
+    private String[] prefs;
+    private String[] lastuv;
     private String[] defaultPrefs;
     private String[] imageSaveCount;
     public static Controller c;
@@ -171,19 +170,25 @@ public class Structured extends PApplet {
         PSurface genericSurface = g.createSurface();
         PSurfaceFX fxSurface = (PSurfaceFX) genericSurface;
         fxSurface.sketch = this;
-        App.surface = fxSurface; // todo remove?
+        App.surface = fxSurface;
         Controller.surface = fxSurface;
 
-        new Thread(() -> Application.launch(App.class)).start();
+        try {
+            //Application.launch(App.class);
+            new App().start(new Stage());
+        } catch (Exception ex) {
+            Logger.getLogger(Structured.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         while (fxSurface.stage == null) {
             try {
                 Thread.sleep(5);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
 
         this.surface = fxSurface;
+        Canvas canvas = (Canvas) surface.getNative();
         return surface;
     }
 
@@ -201,12 +206,10 @@ public class Structured extends PApplet {
         randomShapeG = 255;
         randomShapeB = 255;
 
-        String[] prefs = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastusedvalues.txt");
-        String[] lastuv = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
+        prefs = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastusedvalues.txt");
+        lastuv = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
 
         OSCheck();
-
-
     }
 
     @Override
@@ -230,6 +233,10 @@ public class Structured extends PApplet {
             randomShapeB = startShapeB;
 
         }
+
+        colorMode(HSB);
+        System.out.println(minSizeMultiplier);
+        System.out.println(maxSizeMultiplier);
     }
 
     public void onGenerate() {
@@ -278,7 +285,6 @@ public class Structured extends PApplet {
 
 /*    public void updateColorPickers() {
             startShapePreview.setColorBackground(blendColor(color(0), color(startShapeR, startShapeG, startShapeB, opacitySlider.getValue()), BLEND));
-
                 startShapeRSlider.setColorForeground(color(startShapeR, 0, 0)).setColorActive(color(startShapeR, 0, 0)); //.setColorValue(int(255 - (startShapeR < 0? 0 : startShapeR)));
                 startShapeGSlider.setColorForeground(color(0, startShapeG, 0)).setColorActive(color(0, startShapeG, 0)); //.setColorValue(int(255 - (startShapeG < 0? 0 : startShapeG)));
                 startShapeBSlider.setColorForeground(color(0, 0, startShapeB)).setColorActive(color(0, 0, startShapeB)); //.setColorValue(int(255 - (startShapeB < 0? 0 : startShapeB)));
@@ -486,8 +492,10 @@ public class Structured extends PApplet {
                             textSize(50);
                             if (oldGenC) {
                                 line(0, 0, 0, -drawLength);
+
                             } else {
                                 line(0, 0, currentW * (size), currentH * (size));
+
                             }
                         }
                         if (toggleSquare) {
@@ -605,7 +613,6 @@ public class Structured extends PApplet {
                     repeats = (int) step - 48;
                 }
             }
-
             // Unpush if we need too
             while (pushes > 0) {
                 popMatrix();

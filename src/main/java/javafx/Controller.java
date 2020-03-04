@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -55,6 +56,7 @@ public class Controller implements Initializable {
     @FXML
     Rectangle r_preview;
 
+    private static DecimalFormat df = new DecimalFormat("0.00");
     //private File macDatadir = new File(System.getProperty("user.home") + "/Library/" + "Structured");
     //private File lastUsedValuesTXT = new File(macDatadir + File.separator + "Data" + File.separator + "lastusedvalues.txt");
 
@@ -70,55 +72,55 @@ public class Controller implements Initializable {
 
 //Set Values
         s_alpha.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.alpha = (int) Math.round(newValue.doubleValue());
+            p.alpha = newValue.intValue();
             v_l_alpha.setText(String.valueOf(Math.round(newValue.doubleValue())));
             processing.requestFocus();
         });
         s_complexity.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.complexity = (int) Math.round(newValue.doubleValue());
+            p.complexity = newValue.intValue();
             v_l_complexity.setText(String.valueOf(Math.round(newValue.doubleValue())));
             processing.requestFocus();
         });
         s_stroke.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.stroke = (int) Math.round(newValue.doubleValue());
-            v_l_stroke.setText(String.valueOf(Math.round(newValue.doubleValue())));
+            p.stroke = newValue.intValue();
+            v_l_stroke.textProperty().setValue(String.valueOf(newValue.intValue()));
             processing.requestFocus();
         });
         s_gen.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.gens = (int) Math.round(newValue.doubleValue());
-            v_l_gen.setText(String.valueOf(Math.round(newValue.doubleValue())));
+            p.gens = newValue.intValue();
+            v_l_gen.textProperty().setValue(String.valueOf(newValue.intValue()));
             processing.requestFocus();
         });
         s_axiom.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.axiomAmount = (int) Math.round(newValue.doubleValue());
+            p.axiomAmount = newValue.intValue();
             v_l_axiom.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         s_scatter.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.scatter = (int) Math.round(newValue.doubleValue());
+            p.scatter = newValue.intValue();
             v_l_scatter.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         s_zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.size = (int) Math.round(newValue.doubleValue());
+            p.size = newValue.intValue();
             v_l_zoom.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         s_lerp.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.lerpFrequency = (int) Math.round(newValue.doubleValue());
+            p.lerpFrequency = newValue.intValue();
             v_l_lerp.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         s_maxs.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.maxSizeMultiplier = (Math.round(newValue.doubleValue()) / 100);
+            p.maxSizeMultiplier = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_maxs.setText(String.valueOf((Math.round(newValue.doubleValue()))));
         });
         s_mins.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.minSizeMultiplier = (Math.round(newValue.doubleValue()) / 100);
+            p.minSizeMultiplier = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_mins.setText(String.valueOf((Math.round(newValue.doubleValue()))));
         });
         s_widthr.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.widthRatio = (int) Math.round(newValue.doubleValue());
+            p.widthRatio = newValue.intValue();
             v_l_widthr.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         s_heightr.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.heightRatio = (int) Math.round(newValue.doubleValue());
+            p.heightRatio = newValue.intValue();
             v_l_heightr.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         t_line.selectedProperty().addListener(((observable, oldValue, newValue) -> {
@@ -157,9 +159,9 @@ public class Controller implements Initializable {
 
         colorPicker.setOnAction((ActionEvent e) -> {
             p.startShapeR = (int) Math.round(colorPicker.getValue().getHue());
-            p.startShapeG = (int) Math.round(colorPicker.getValue().getSaturation());
-            p.startShapeB = (int) Math.round(colorPicker.getValue().getBrightness());
-            p.opacity = (int) Math.round(colorPicker.getValue().getOpacity());
+            p.startShapeG = (float) Math.round(colorPicker.getValue().getSaturation() * 100);
+            p.startShapeB = (float) Math.round(colorPicker.getValue().getBrightness() * 100);
+            p.opacity = (int) Math.round(colorPicker.getValue().getOpacity() * 100);
 
             r_preview.setFill(Color.hsb(colorPicker.getValue().getHue(), colorPicker.getValue().getSaturation(), colorPicker.getValue().getBrightness(), colorPicker.getValue().getOpacity()));
         });

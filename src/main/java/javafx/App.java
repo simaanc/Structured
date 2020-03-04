@@ -23,7 +23,6 @@ public class App extends Application {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 
-        System.out.println("This should be working");
         System.out.println(Controller.class.getResource("/ProcessingFX.fxml"));
         Parent root = FXMLLoader.load(Controller.class.getResource("/ProcessingFX.fxml"));
         Controller.stage = controlsStage;

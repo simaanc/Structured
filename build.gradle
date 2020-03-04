@@ -1,5 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    }
+}
+
 plugins {
     id 'java'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
     id "edu.sc.seis.macAppBundle" version "2.3.0"
     id 'application'
 }
@@ -9,16 +20,22 @@ version '3.0'
 
 repositories {
     mavenCentral()
-
+    jcenter()
     flatDir {
         dirs 'libs'
     }
 }
 
-/*javafx {
+javafx {
     version = "11.0.2"
     modules = [ 'javafx.base', 'javafx.controls', 'javafx.fxml',  'javafx.graphics', 'javafx.media', 'javafx.swing', 'javafx.web']
-}*/
+}
+
+apply plugin: 'eu.appsatori.fatjar'
+
+fatJar {
+    exclude 'META-INF/*.DSA'
+}
 
 macAppBundle {
     mainClassName = "com.simaanc.main.Main"
@@ -28,8 +45,8 @@ macAppBundle {
 }
 
 dependencies {
-    compile 'com.jfoenix:jfoenix:8.0.8'
+    compile 'com.jfoenix:jfoenix:9.0.8'
+    compile 'eu.appsatori:gradle-fatjar-plugin:0.3'
     compile fileTree(include: ['*.jar'], dir: 'libs') as Object[]
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
-
