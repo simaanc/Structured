@@ -69,7 +69,6 @@ public class Controller implements Initializable {
         canvas.widthProperty().bind(processing.widthProperty());
         canvas.heightProperty().bind(processing.heightProperty());
 
-
 //Set Values
         s_alpha.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.alpha = newValue.intValue();
@@ -116,11 +115,11 @@ public class Controller implements Initializable {
             v_l_mins.setText(String.valueOf((Math.round(newValue.doubleValue()))));
         });
         s_widthr.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.widthRatio = newValue.intValue();
+            p.widthRatio = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_widthr.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         s_heightr.valueProperty().addListener((observable, oldValue, newValue) -> {
-            p.heightRatio = newValue.intValue();
+            p.heightRatio = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_heightr.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
         t_line.selectedProperty().addListener(((observable, oldValue, newValue) -> {

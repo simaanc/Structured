@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXSlider?>
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ColorPicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
-
 <AnchorPane fx:id="superParent" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="javafx.Controller">
     <SplitPane dividerPositions="0.3" layoutY="24.0" prefHeight="776.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0"
                AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -344,7 +334,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
-                    <JFXSlider fx:id="s_widthr" focusTraversable="false" max="1.0" min="0.01"
+                    <JFXSlider fx:id="s_widthr" focusTraversable="false" min="1.0"
                                stylesheets="@theme.css" value="0.5"/>
                     <Label text="Width Ratio" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">
@@ -367,7 +357,7 @@
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                         <RowConstraints minHeight="15.0" prefHeight="15.0" vgrow="NEVER"/>
                     </rowConstraints>
-                    <JFXSlider fx:id="s_heightr" focusTraversable="false" max="1.0" min="0.01"
+                    <JFXSlider fx:id="s_heightr" focusTraversable="false" min="1.0"
                                stylesheets="@theme.css" value="0.5"/>
                     <Label text="Height Ratio" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="1"
                            GridPane.valignment="CENTER">

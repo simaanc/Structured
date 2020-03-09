@@ -235,8 +235,6 @@ public class Structured extends PApplet {
         }
 
         colorMode(HSB);
-        System.out.println(minSizeMultiplier);
-        System.out.println(maxSizeMultiplier);
     }
 
     public void onGenerate() {

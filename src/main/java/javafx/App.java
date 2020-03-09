@@ -22,8 +22,6 @@ public class App extends Application {
         Stage controlsStage = new Stage();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-
-        System.out.println(Controller.class.getResource("/ProcessingFX.fxml"));
         Parent root = FXMLLoader.load(Controller.class.getResource("/ProcessingFX.fxml"));
         Controller.stage = controlsStage;
         Scene scene = new Scene(root, screenSize.getWidth(), screenSize.getHeight());
@@ -31,8 +29,6 @@ public class App extends Application {
         primaryStage.setTitle("Structured");
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        //tk.setMenuBar(primaryStage, bar);
 
         surface.stage = primaryStage;
         Controller.stage = controlsStage;
