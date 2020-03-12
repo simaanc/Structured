@@ -18,10 +18,7 @@ import javafx.stage.Stage;
 import processing.Structured;
 import processing.javafx.PSurfaceFX;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Properties;
@@ -37,24 +34,27 @@ public class Controller implements Initializable {
     public static Structured p;
     protected static Stage stage;
 
-    public JFXToggleButton t_ogen;
+    public boolean Startup = false;
+
 
     @FXML
-    AnchorPane superParent;
+    public JFXToggleButton t_ogen;
     @FXML
-    JFXSlider s_alpha, s_complexity, s_stroke, s_gen, s_axiom, s_scatter, s_zoom, s_lerp, s_maxs, s_mins, s_widthr, s_heightr;
+    public AnchorPane superParent;
     @FXML
-    StackPane processing;
+    public JFXSlider s_alpha, s_complexity, s_stroke, s_gen, s_axiom, s_scatter, s_zoom, s_lerp, s_maxs, s_mins, s_widthr, s_heightr;
     @FXML
-    ColorPicker colorPicker;
+    public StackPane processing;
     @FXML
-    Label v_l_alpha, v_l_complexity, v_l_stroke, v_l_gen, v_l_axiom, v_l_scatter, v_l_zoom, v_l_lerp, v_l_maxs, v_l_mins, v_l_widthr, v_l_heightr;
+    public ColorPicker colorPicker;
     @FXML
-    JFXToggleButton t_line, t_square, t_circle, t_triangle, t_hexagon, t_cube, t_squaref, t_circlef, t_trianglef, t_hexagonf, t_cubef, t_ratiol, t_sizel;
+    public Label v_l_alpha, v_l_complexity, v_l_stroke, v_l_gen, v_l_axiom, v_l_scatter, v_l_zoom, v_l_lerp, v_l_maxs, v_l_mins, v_l_widthr, v_l_heightr;
     @FXML
-    JFXButton b_defaultc, b_generate, b_save;
+    public JFXToggleButton t_line, t_square, t_circle, t_triangle, t_hexagon, t_cube, t_squaref, t_circlef, t_trianglef, t_hexagonf, t_cubef, t_ratiol, t_sizel;
     @FXML
-    Rectangle r_preview;
+    public JFXButton b_defaultc, b_generate, b_save;
+    @FXML
+    public Rectangle r_preview;
 
     private static DecimalFormat df = new DecimalFormat("0.00");
     //private File macDatadir = new File(System.getProperty("user.home") + "/Library/" + "Structured");
@@ -62,112 +62,184 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         Canvas canvas = (Canvas) surface.getNative();
         surface.fx.context = canvas.getGraphicsContext2D();
         processing.getChildren().add(canvas);
         canvas.widthProperty().bind(processing.widthProperty());
         canvas.heightProperty().bind(processing.heightProperty());
 
+        Properties prop = new Properties();
+        try {
+            prop.loadFromXML(new FileInputStream(System.getProperty("user.home") + "/Library/" + "Structured" + File.separator + "Data" + File.separator + "lastusedvalues.xml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 //Set Values
+        s_alpha.valueProperty().setValue(Double.parseDouble(prop.getProperty("Alpha")));
+        v_l_alpha.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Alpha")))));
         s_alpha.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.alpha = newValue.intValue();
             v_l_alpha.setText(String.valueOf(Math.round(newValue.doubleValue())));
             processing.requestFocus();
         });
+
+        s_complexity.valueProperty().setValue(Double.parseDouble(prop.getProperty("Complexity")));
+        v_l_complexity.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Complexity")))));
         s_complexity.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.complexity = newValue.intValue();
             v_l_complexity.setText(String.valueOf(Math.round(newValue.doubleValue())));
             processing.requestFocus();
         });
+
+        s_stroke.valueProperty().setValue(Double.parseDouble(prop.getProperty("Stroke")));
+        v_l_stroke.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Stroke")))));
         s_stroke.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.stroke = newValue.intValue();
             v_l_stroke.textProperty().setValue(String.valueOf(newValue.intValue()));
             processing.requestFocus();
         });
+
+        s_gen.valueProperty().setValue(Double.parseDouble(prop.getProperty("Gen")));
+        v_l_gen.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Gen")))));
         s_gen.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.gens = newValue.intValue();
             v_l_gen.textProperty().setValue(String.valueOf(newValue.intValue()));
             processing.requestFocus();
         });
+
+        s_axiom.valueProperty().setValue(Double.parseDouble(prop.getProperty("Axiom")));
+        v_l_axiom.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Axiom")))));
         s_axiom.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.axiomAmount = newValue.intValue();
             v_l_axiom.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
+
+        s_scatter.valueProperty().setValue(Double.parseDouble(prop.getProperty("Scatter")));
+        v_l_scatter.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Scatter")))));
         s_scatter.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.scatter = newValue.intValue();
             v_l_scatter.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
+
+        s_zoom.valueProperty().setValue(Double.parseDouble(prop.getProperty("Zoom")));
+        v_l_zoom.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Zoom")))));
         s_zoom.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.size = newValue.intValue();
             v_l_zoom.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
+
+        s_lerp.valueProperty().setValue(Double.parseDouble(prop.getProperty("Lerp")));
+        v_l_lerp.setText(String.valueOf(Math.round(Float.parseFloat(prop.getProperty("Lerp")))));
         s_lerp.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.lerpFrequency = newValue.intValue();
             v_l_lerp.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
+
+        s_maxs.valueProperty().setValue((Double.parseDouble(prop.getProperty("MaxSize"))) * 100);
+        v_l_maxs.setText(String.valueOf(Math.round(Float.parseFloat((prop.getProperty("MaxSize"))) * 100)));
         s_maxs.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.maxSizeMultiplier = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_maxs.setText(String.valueOf((Math.round(newValue.doubleValue()))));
         });
+
+        s_mins.valueProperty().setValue((Double.parseDouble(prop.getProperty("MinSize"))) * 100);
+        v_l_mins.setText(String.valueOf(Math.round(Float.parseFloat((prop.getProperty("MinSize"))) * 100)));
         s_mins.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.minSizeMultiplier = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_mins.setText(String.valueOf((Math.round(newValue.doubleValue()))));
         });
+
+        s_widthr.valueProperty().setValue((Double.parseDouble(prop.getProperty("WidthRatio"))) * 100);
+        v_l_widthr.setText(String.valueOf(Math.round(Float.parseFloat((prop.getProperty("WidthRatio"))) * 100)));
         s_widthr.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.widthRatio = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_widthr.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
+
+        s_heightr.valueProperty().setValue((Double.parseDouble(prop.getProperty("HeightRatio"))) * 100);
+        v_l_heightr.setText(String.valueOf(Math.round(Float.parseFloat((prop.getProperty("HeightRatio"))) * 100)));
         s_heightr.valueProperty().addListener((observable, oldValue, newValue) -> {
             p.heightRatio = (float) (Math.round(newValue.doubleValue()) / 100.0);
             v_l_heightr.setText(String.valueOf(Math.round(newValue.doubleValue())));
         });
+
+        t_line.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("LineToggle")));
         t_line.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleLine = newValue;
         }));
+
+        t_square.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("SquareToggle")));
         t_square.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleSquare = newValue;
         }));
+
+        t_circle.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("CircleToggle")));
         t_circle.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleCircle = newValue;
         }));
+
+        t_triangle.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("TriangleToggle")));
         t_triangle.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleTriangle = newValue;
         }));
+
+        t_hexagon.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("HexagonToggle")));
         t_hexagon.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleHex = newValue;
         }));
+
+        t_cube.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("CubeToggle")));
         t_cube.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleCube = newValue;
         }));
+
+        t_squaref.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("SquareToggleFill")));
         t_squaref.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleSquareFill = newValue;
         }));
+
+        t_circlef.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("CircleToggleFill")));
         t_circlef.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleCircleFill = newValue;
         }));
+
+        t_trianglef.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("SquareToggleFill")));
         t_trianglef.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleTriangleFill = newValue;
         }));
+
+        t_hexagonf.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("SquareToggleFill")));
         t_hexagonf.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleHexFill = newValue;
         }));
+
+        t_cubef.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("SquareToggleFill")));
         t_cubef.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             p.toggleCubeFill = newValue;
         }));
 
+        Double intH = Double.valueOf(prop.getProperty("Color Hue"));
+        Double intS = (Double.valueOf(prop.getProperty("Color Sat")) / 100);
+        Double intB = (Double.valueOf(prop.getProperty("Color Brightness")) / 100);
+        Double intO = (Double.valueOf(prop.getProperty("Color Opacity")) / 100);
+        colorPicker.valueProperty().setValue(Color.hsb(intH, intS, intB, intO));
+        r_preview.setFill(Color.hsb(intH, intS, intB, intO));
         colorPicker.setOnAction((ActionEvent e) -> {
-            p.startShapeR = (int) Math.round(colorPicker.getValue().getHue());
-            p.startShapeG = (float) Math.round(colorPicker.getValue().getSaturation() * 100);
+            p.startShapeH = (int) Math.round(colorPicker.getValue().getHue());
+            p.startShapeS = (float) Math.round(colorPicker.getValue().getSaturation() * 100);
             p.startShapeB = (float) Math.round(colorPicker.getValue().getBrightness() * 100);
             p.opacity = (int) Math.round(colorPicker.getValue().getOpacity() * 100);
 
             r_preview.setFill(Color.hsb(colorPicker.getValue().getHue(), colorPicker.getValue().getSaturation(), colorPicker.getValue().getBrightness(), colorPicker.getValue().getOpacity()));
         });
 
+        t_ratiol.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("Ratio Link")));
         t_ratiol.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             s_heightr.valueProperty().set(s_widthr.getValue());
         }));
+
+        t_sizel.selectedProperty().setValue(Boolean.valueOf(prop.getProperty("Size Link")));
         t_sizel.selectedProperty().addListener(((observable, oldValue, newValue) -> {
             s_maxs.valueProperty().set(s_mins.getValue());
         }));
@@ -205,13 +277,14 @@ public class Controller implements Initializable {
                 props.setProperty("HexagonToggleFill", String.valueOf(p.toggleHexFill));
                 props.setProperty("CubeToggleFill", String.valueOf(p.toggleCubeFill));
                 props.setProperty("Lerp", String.valueOf(p.lerpFrequency));
-                props.setProperty("Color Red", String.valueOf(p.startShapeR));
-                props.setProperty("Color Green", String.valueOf(p.startShapeG));
-                props.setProperty("Color Blue", String.valueOf(p.startShapeB));
-                props.setProperty("Max Size", String.valueOf(p.maxSizeMultiplier));
-                props.setProperty("Min Size", String.valueOf(p.minSizeMultiplier));
-                props.setProperty("Width Ratio", String.valueOf(p.widthRatio));
-                props.setProperty("Height Ratio", String.valueOf(p.widthRatio));
+                props.setProperty("Color Hue", String.valueOf(p.startShapeH));
+                props.setProperty("Color Sat", String.valueOf(p.startShapeS));
+                props.setProperty("Color Brightness", String.valueOf(p.opacity));
+                props.setProperty("Color Opacity", String.valueOf(p.startShapeB));
+                props.setProperty("MaxSize", String.valueOf(p.maxSizeMultiplier));
+                props.setProperty("MinSize", String.valueOf(p.minSizeMultiplier));
+                props.setProperty("WidthRatio", String.valueOf(p.widthRatio));
+                props.setProperty("HeightRatio", String.valueOf(p.widthRatio));
                 props.setProperty("Ratio Link", String.valueOf(t_ratiol.isSelected()));
                 props.setProperty("Size Link", String.valueOf(t_sizel.isSelected()));
 
@@ -272,6 +345,7 @@ public class Controller implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
+        Startup = true;
     }
 
     @FXML

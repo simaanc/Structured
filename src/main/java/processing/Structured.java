@@ -9,6 +9,7 @@ import processing.core.PSurface;
 import processing.javafx.PSurfaceFX;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -40,8 +41,8 @@ public class Structured extends PApplet {
     public boolean toggleCube;
     public float axiomAmount;
     public int alpha;
-    public float startShapeR;
-    public float startShapeG;
+    public float startShapeH;
+    public float startShapeS;
     public float startShapeB;
     public float randomShapeR;
     public float randomShapeG;
@@ -83,7 +84,7 @@ public class Structured extends PApplet {
     private String[] lastuv;
     private String[] defaultPrefs;
     private String[] imageSaveCount;
-    public static Controller c;
+    public Controller c;
     public Properties props = new Properties();
 
 
@@ -186,7 +187,6 @@ public class Structured extends PApplet {
             } catch (InterruptedException ignored) {
             }
         }
-
         this.surface = fxSurface;
         Canvas canvas = (Canvas) surface.getNative();
         return surface;
@@ -206,10 +206,10 @@ public class Structured extends PApplet {
         randomShapeG = 255;
         randomShapeB = 255;
 
-        prefs = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastusedvalues.txt");
         lastuv = loadStrings(macDatadir + File.separator + "Data" + File.separator + "lastUsedGenPattern.txt");
 
         OSCheck();
+        initVals();
     }
 
     @Override
@@ -225,16 +225,18 @@ public class Structured extends PApplet {
                         }*/
         }
 
-        if (startShapeR < 0 && startShapeG < 0 && startShapeB < 0) {
+        if (startShapeH < 0 && startShapeS < 0 && startShapeB < 0) {
             randomShapeR = random(randomShapeR - lerpFrequency, randomShapeR + lerpFrequency);
         } else {
-            randomShapeR = startShapeR;
-            randomShapeG = startShapeG;
+            randomShapeR = startShapeH;
+            randomShapeG = startShapeS;
             randomShapeB = startShapeB;
 
         }
 
         colorMode(HSB);
+
+        System.out.println(alpha);
     }
 
     public void onGenerate() {
@@ -251,7 +253,7 @@ public class Structured extends PApplet {
             /*saveStrings(lastUsedValuesTXT, new String[]{
                     "" + startShapeR + "\n" + startShapeG + "\n" + startShapeB + "\n" + lerpFrequency + "\n" + opacity + "\n" + widthRatio + "\n" + heightRatio + "\n" + maxSizeMultiplier + "\n" + minSizeMultiplier + "\n" + alpha + "\n" + complexity + "\n" + stroke + "\n" + gens + "\n" + axiomAmount + "\n" + scatter + "\n" + toggleLine + "\n" + toggleSquare + "\n" + toggleCircle + "\n" + toggleTriangle + "\n" + toggleHex + "\n" + toggleCube + "\n" + toggleSquareFill + "\n" + toggleCircleFill + "\n" + toggleTriangle + "\n" + toggleHexFill + "\n" + "" + "\n" + oldGenC + "\n" + hsbMode + "\n" + sizeToggleRatio + "\n" + size + "\n" + toggleCircleFill + "\n"
             });*/
-            beginRecord(PDF, macDir + File.separator + "Saves" + File.separator + "Structure-" + PApplet.parseInt(imageSaveCount[0]) + ".pdf");
+//            beginRecord(PDF, macDir + File.separator + "Saves" + File.separator + "Structure-" + PApplet.parseInt(imageSaveCount[0]) + ".pdf");
         }
 
         cs.simulate((int) gens);
@@ -288,6 +290,45 @@ public class Structured extends PApplet {
                 startShapeBSlider.setColorForeground(color(0, 0, startShapeB)).setColorActive(color(0, 0, startShapeB)); //.setColorValue(int(255 - (startShapeB < 0? 0 : startShapeB)));
                 s_rh.setBackground();
     }*/
+
+    public void initVals() {
+        java.util.Properties prop = new Properties();
+        try {
+            prop.loadFromXML(new FileInputStream(System.getProperty("user.home") + "/Library/" + "Structured" + File.separator + "Data" + File.separator + "lastusedvalues.xml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        double intH = Double.parseDouble(prop.getProperty("Color Hue"));
+        double intS = (Double.parseDouble(prop.getProperty("Color Sat")) / 100);
+        double intB = (Double.parseDouble(prop.getProperty("Color Brightness")) / 100);
+        double intO = (Double.parseDouble(prop.getProperty("Color Opacity")) / 100);
+
+        alpha = Integer.parseInt(prop.getProperty("Alpha"));
+        complexity = Integer.parseInt(prop.getProperty("Complexity"));
+        stroke = Integer.parseInt(prop.getProperty("Stroke"));
+        gens = Integer.parseInt(prop.getProperty("Gen"));
+        axiomAmount = Integer.parseInt(prop.getProperty("Axiom"));
+        scatter = Integer.parseInt(prop.getProperty("Scatter"));
+        size = Integer.parseInt(prop.getProperty("Zoom"));
+        lerpFrequency = Integer.parseInt(prop.getProperty("Lerp"));
+        maxSizeMultiplier = Integer.parseInt(prop.getProperty("MaxSize"));
+        minSizeMultiplier = Integer.parseInt(prop.getProperty("MinSize"));
+        toggleLine = Boolean.parseBoolean(prop.getProperty("LineToggle"));
+        toggleSquare = Boolean.parseBoolean(prop.getProperty("SquareToggle"));
+        toggleCircle = Boolean.parseBoolean(prop.getProperty("CircleToggle"));
+        toggleTriangle = Boolean.parseBoolean(prop.getProperty("TriangleToggle"));
+        toggleHex = Boolean.parseBoolean(prop.getProperty("HexagonToggle"));
+        toggleLine = Boolean.parseBoolean(prop.getProperty("SquareToggleFill"));
+        toggleLine = Boolean.parseBoolean(prop.getProperty("CircleToggleFill"));
+        toggleLine = Boolean.parseBoolean(prop.getProperty("TriangleToggleFill"));
+        toggleLine = Boolean.parseBoolean(prop.getProperty("HexagonToggleFill"));
+        toggleLine = Boolean.parseBoolean(prop.getProperty("CubeToggleFill"));
+        startShapeH = (int) Math.round(intH);
+        startShapeS = (float) Math.round(intS * 100);
+        startShapeB = (float) Math.round(intB * 100);
+        opacity = (int) Math.round(intO * 100);
+    }
 
     public void redraw() {
         int bgColor = 255;
