@@ -4,8 +4,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import StructuredCanvas from '../components/StructuredCanvas';
 import ControlPanel from '../components/ControlPanel';
-import { generateRules, simulateLSystem } from '../lib/lsystem';
-import { Operation, SystemParams } from '../lib/types';
+import { SystemParams } from '../lib/types';
+import { generateExactJavaMatch } from '../lib/java-match-lsystem';
 
 // Default parameters
 const DEFAULT_PARAMS: SystemParams = {
@@ -48,9 +48,8 @@ export default function Home() {
   // Canvas size state
   const [canvasSize, setCanvasSize] = useState<{ width: number, height: number }>({ width: 800, height: 600 });
   
-  // State for L-system rules and production
-  const [rules, setRules] = useState<any>(null);
-  const [production, setProduction] = useState<Operation[]>([]);
+  // State for L-system production
+  const [production, setProduction] = useState<string>("");
   
   // State for all the parameters
   const [params, setParams] = useState<SystemParams>(DEFAULT_PARAMS);
@@ -85,15 +84,11 @@ export default function Home() {
     }));
   }, []);
   
-  // Generate artwork handler
+  // Generate artwork handler - Exact match to Java version
   const handleGenerate = useCallback(() => {
-    // Use the new typed operation-based rules
-    const newRules = generateRules(params.axiomAmount);
-    setRules(newRules);
-    
-    // Generate the final production
-    const finalProduction = simulateLSystem(params.gens, newRules.axiom, newRules);
-    setProduction(finalProduction);
+    // Generate production using our Java-matching algorithm
+    const newProduction = generateExactJavaMatch(params.axiomAmount, params.gens);
+    setProduction(newProduction);
     
     // Save settings to localStorage
     localStorage.setItem('structuredSettings', JSON.stringify(params));
@@ -138,17 +133,13 @@ export default function Home() {
     
     // Initial artwork generation is deferred to avoid blocking the UI
     setTimeout(() => {
-      // Call generate directly instead of using the callback
-      const newRules = generateRules(params.axiomAmount);
-      setRules(newRules);
-      const finalProduction = simulateLSystem(params.gens, newRules.axiom, newRules);
-      setProduction(finalProduction);
+      const initialProduction = generateExactJavaMatch(params.axiomAmount, params.gens);
+      setProduction(initialProduction);
     }, 100);
     
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  // Remove handleGenerate from dependencies, only keep handleResize
   }, [handleResize]);
   
   return (
@@ -162,6 +153,7 @@ export default function Home() {
             params={params}
             width={canvasSize.width}
             height={canvasSize.height}
+            useJavaMatch={true}
           />
         </div>
         

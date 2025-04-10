@@ -35,14 +35,6 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         
         {/* Sliders */}
         <ParameterSlider
-          label="Alpha"
-          value={params.alpha}
-          min={0}
-          max={255}
-          onChange={(value: number) => updateParam('alpha', value)}
-        />
-        
-        <ParameterSlider
           label="Complexity"
           value={params.complexity}
           min={0}

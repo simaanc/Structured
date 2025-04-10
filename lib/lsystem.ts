@@ -94,131 +94,66 @@ export const operationsToString = (operations: Operation[]): string => {
 };
 
 /**
- * Generates a random operation sequence
- * @param {number} length - Length of sequence to generate
- * @returns {Operation[]} - Array of operations
+ * Gets a random character from the provided string
+ * @param {string} chars - String of possible characters
+ * @returns {string} Random character
  */
-export const generateRandomOperations = (length: number): Operation[] => {
-  // All possible operations for random generation
-  const possibleOperations: Operation[] = [
-    { type: OperationType.ROTATE_RIGHT },
-    { type: OperationType.ROTATE_LEFT },
-    { type: OperationType.ROTATE_RIGHT_DOUBLE },
-    { type: OperationType.ROTATE_RIGHT_HALF },
-    { type: OperationType.ROTATE_SQUARED },
-    { type: OperationType.ROTATE_CUBED },
-    { type: OperationType.DRAW_FORWARD },
-    { type: OperationType.PUSH_STATE },
-    { type: OperationType.POP_STATE },
-    { type: VariableType.RULE_W },
-    { type: VariableType.RULE_X },
-    { type: VariableType.RULE_Y },
-    { type: VariableType.RULE_Z }
-  ];
-  
-  // Add repeat operations
-  for (let i = 0; i <= 9; i++) {
-    possibleOperations.push({ type: OperationType.REPEAT, value: i });
-  }
-  
-  // Generate random operations
-  const operations: Operation[] = [];
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * possibleOperations.length);
-    operations.push({ ...possibleOperations[randomIndex] });
-  }
-  
-  return operations;
+const getRandomChar = (chars: string): string => {
+  return chars.charAt(Math.floor(Math.random() * chars.length));
 };
 
 /**
- * Generates L-system rules
+ * Generates a random string of specified length
+ * @param {number} length - Length of the string to generate
+ * @param {string} chars - Characters to use in generation
+ * @returns {string} - Random string
+ */
+const generateRandomString = (length: number, chars: string): string => {
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += getRandomChar(chars);
+  }
+  return result;
+};
+
+/**
+ * Generates L-system rules - Modified to match Java version's RandomString generator
  * @param {number} axiomAmount - Number of axioms to generate
  * @returns {SystemRules} - Set of L-system rules
  */
 export const generateRules = (axiomAmount: number): SystemRules => {
+  // Matching Java version's character set
+  const structure = "+-*/^$0123456789WXYZF";
+  
   // Create base axiom pattern
-  const axiomPattern: Operation[] = [
-    { type: OperationType.PUSH_STATE },
-    { type: VariableType.RULE_X },
-    { type: OperationType.POP_STATE },
-    { type: OperationType.ROTATE_RIGHT },
-    { type: OperationType.ROTATE_RIGHT }
-  ];
+  let axiomStr = '';
+  for (let i = 0; i < axiomAmount; i++) {
+    axiomStr += '[X]++';
+  }
   
-  // Repeat axiom pattern for specified amount
-  const axiom: Operation[] = Array(axiomAmount).fill(0).flatMap(() => [...axiomPattern]);
+  // Generate rule strings similar to Java RandomString class
+  const genTwo = generateRandomString(2, structure);
+  const genThree = generateRandomString(3, structure);
+  const genFour = generateRandomString(4, structure);
   
-  // Generate rule patterns
+  // Mimic Java version rule patterns
+  const ruleWStr = `${genTwo}++${genThree}${genTwo}[${genThree}${genTwo}]++`;
+  const ruleXStr = `+YF${genFour}[${genTwo}${genTwo}${genFour}]+`;
+  const ruleYStr = `-WF${genFour}[${genFour}${genFour}]-`;
+  const ruleZStr = `--YF+^+WF[+ZF++++XF]--XF`;
+  
+  // Convert to operations
   return {
-    axiom,
-    ruleW: [
-      ...generateRandomOperations(2),
-      { type: OperationType.ROTATE_RIGHT },
-      { type: OperationType.ROTATE_RIGHT },
-      ...generateRandomOperations(3),
-      ...generateRandomOperations(2),
-      { type: OperationType.PUSH_STATE },
-      ...generateRandomOperations(3),
-      ...generateRandomOperations(2),
-      { type: OperationType.POP_STATE },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: OperationType.ROTATE_RIGHT }
-    ],
-    ruleX: [
-      { type: OperationType.ROTATE_RIGHT },
-      { type: VariableType.RULE_Y },
-      { type: OperationType.DRAW_FORWARD },
-      ...generateRandomOperations(4),
-      { type: OperationType.PUSH_STATE },
-      ...generateRandomOperations(2),
-      ...generateRandomOperations(2),
-      ...generateRandomOperations(4),
-      { type: OperationType.POP_STATE },
-      { type: OperationType.ROTATE_RIGHT }
-    ],
-    ruleY: [
-      { type: OperationType.ROTATE_LEFT },
-      { type: VariableType.RULE_W },
-      { type: OperationType.DRAW_FORWARD },
-      ...generateRandomOperations(4),
-      { type: OperationType.PUSH_STATE },
-      ...generateRandomOperations(4),
-      ...generateRandomOperations(4),
-      { type: OperationType.POP_STATE },
-      { type: OperationType.ROTATE_LEFT }
-    ],
-    ruleZ: [
-      { type: OperationType.ROTATE_LEFT },
-      { type: OperationType.ROTATE_LEFT },
-      { type: VariableType.RULE_Y },
-      { type: OperationType.DRAW_FORWARD },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: OperationType.ROTATE_SQUARED },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: VariableType.RULE_W },
-      { type: OperationType.DRAW_FORWARD },
-      { type: OperationType.PUSH_STATE },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: VariableType.RULE_Z },
-      { type: OperationType.DRAW_FORWARD },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: OperationType.ROTATE_RIGHT },
-      { type: VariableType.RULE_X },
-      { type: OperationType.DRAW_FORWARD },
-      { type: OperationType.POP_STATE },
-      { type: OperationType.ROTATE_LEFT },
-      { type: OperationType.ROTATE_LEFT },
-      { type: VariableType.RULE_X },
-      { type: OperationType.DRAW_FORWARD }
-    ]
+    axiom: stringToOperations(axiomStr),
+    ruleW: stringToOperations(ruleWStr),
+    ruleX: stringToOperations(ruleXStr),
+    ruleY: stringToOperations(ruleYStr),
+    ruleZ: stringToOperations(ruleZStr)
   };
 };
 
 /**
- * Simulate L-system for multiple generations
+ * Simulate L-system for multiple generations - Matching Java version structure
  * @param {number} generations - Number of generations to simulate
  * @param {Operation[]} startProduction - Starting production operations
  * @param {SystemRules} rules - L-system rules
@@ -235,7 +170,7 @@ export const simulateLSystem = (generations: number, startProduction: Operation[
     [VariableType.RULE_Z]: rules.ruleZ
   };
   
-  // Apply rules for the specified number of generations
+  // Apply rules for the specified number of generations - matching Java iterate method
   for (let gen = 0; gen < generations; gen++) {
     let next: Operation[] = [];
     
@@ -245,8 +180,8 @@ export const simulateLSystem = (generations: number, startProduction: Operation[
       if (operation.type in ruleMap) {
         next.push(...ruleMap[operation.type as VariableType]);
       } 
-      // Skip 'DRAW_FORWARD' operations in intermediary productions to avoid excessive growth
-      else if (operation.type !== OperationType.DRAW_FORWARD || gen === generations - 1) {
+      // Keep other operations as is
+      else {
         next.push(operation);
       }
     }
@@ -272,29 +207,4 @@ export const generateRulesAsStrings = (axiomAmount: number): Record<string, stri
     ruleY: operationsToString(rules.ruleY),
     ruleZ: operationsToString(rules.ruleZ)
   };
-};
-
-/**
- * For backward compatibility: simulate L-system using character-based format
- * @param {number} generations - Number of generations to simulate
- * @param {string} startProductionStr - Starting production string
- * @param {Record<string, string>} rulesStr - L-system rules as strings
- * @returns {string} - Final production string
- */
-export const simulateLSystemFromStrings = (
-  generations: number, 
-  startProductionStr: string, 
-  rulesStr: Record<string, string>
-): string => {
-  const startProduction = stringToOperations(startProductionStr);
-  const rules = {
-    axiom: stringToOperations(rulesStr.axiom),
-    ruleW: stringToOperations(rulesStr.ruleW),
-    ruleX: stringToOperations(rulesStr.ruleX),
-    ruleY: stringToOperations(rulesStr.ruleY),
-    ruleZ: stringToOperations(rulesStr.ruleZ)
-  };
-  
-  const result = simulateLSystem(generations, startProduction, rules);
-  return operationsToString(result);
 };
