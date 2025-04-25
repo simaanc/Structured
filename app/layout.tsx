@@ -1,10 +1,9 @@
 // src/app/layout.tsx
-import './globals.css';
-import { Metadata } from 'next';
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: 'Structured - Generative Art App',
-  description: 'A generative art application inspired by L-systems',
+export const metadata = {
+  title: "Structured",
+  description: "Generative math patterns with Lindenmayer systems",
 };
 
 export default function RootLayout({
@@ -14,9 +13,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <head />
+      <body className="bg-gray-900 text-white">{children}</body>
     </html>
   );
 }
