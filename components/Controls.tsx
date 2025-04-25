@@ -187,7 +187,7 @@ const sliderConfigs: Array<{
     min: 0,
     max: 100,
     step: 1,
-    category: "appearance",
+    category: "system",
   },
   {
     key: "opacity",
