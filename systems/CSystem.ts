@@ -1,8 +1,8 @@
 // systems/CSystem.ts
 
-import LSystem from './LSystem';
-import RandomString from './RandomString';
-import { Params } from '../types/types';
+import LSystem from "./LSystem";
+import RandomString from "./RandomString";
+import { Params } from "../types/types";
 
 /**
  * Convert HSB/HSV (h:0–360, s:0–100, v:0–100) → RGB [0–255].
@@ -13,13 +13,15 @@ function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
   const val = v / 100;
   const c = val * sat;
   const x = c * (1 - Math.abs((hh % 2) - 1));
-  let r1 = 0, g1 = 0, b1 = 0;
-  if      (hh < 1) [r1, g1, b1] = [c, x, 0];
+  let r1 = 0,
+    g1 = 0,
+    b1 = 0;
+  if (hh < 1) [r1, g1, b1] = [c, x, 0];
   else if (hh < 2) [r1, g1, b1] = [x, c, 0];
   else if (hh < 3) [r1, g1, b1] = [0, c, x];
   else if (hh < 4) [r1, g1, b1] = [0, x, c];
   else if (hh < 5) [r1, g1, b1] = [x, 0, c];
-  else              [r1, g1, b1] = [c, 0, x];
+  else [r1, g1, b1] = [c, 0, x];
   const m = val - c;
   return [
     Math.round((r1 + m) * 255),
@@ -37,7 +39,7 @@ export default class CSystem extends LSystem {
 
   constructor(params: Params) {
     super({
-      axiom: Array(params.axiomAmount).fill('[X]++').join(''),
+      axiom: Array(params.axiomAmount).fill("[X]++").join(""),
       startLength: params.startLength,
       thetaDeg: params.thetaDeg,
     });
@@ -60,14 +62,24 @@ export default class CSystem extends LSystem {
 
   simulate(gen: number) {
     while (this.generations < gen) {
-      let nextProd = '';
+      let nextProd = "";
       for (const c of this.production) {
         switch (c) {
-          case 'W': nextProd += this.ruleW; break;
-          case 'X': nextProd += this.ruleX; break;
-          case 'Y': nextProd += this.ruleY; break;
-          case 'Z': nextProd += this.ruleZ; break;
-          default:  nextProd += c;        break;
+          case "W":
+            nextProd += this.ruleW;
+            break;
+          case "X":
+            nextProd += this.ruleX;
+            break;
+          case "Y":
+            nextProd += this.ruleY;
+            break;
+          case "Z":
+            nextProd += this.ruleZ;
+            break;
+          default:
+            nextProd += c;
+            break;
         }
       }
       this.production = nextProd;
@@ -88,7 +100,9 @@ export default class CSystem extends LSystem {
     ctx.lineWidth = p.strokeWeight;
 
     let pushes = 0;
-    let curHue = p.startHue, curSat = p.startSat, curBri = p.startBri;
+    let curHue = p.startHue,
+      curSat = p.startSat,
+      curBri = p.startBri;
     const base = this.startLength;
 
     for (let i = 0; i < Math.min(this.production.length, p.complexity); i++) {
@@ -98,23 +112,30 @@ export default class CSystem extends LSystem {
       if (p.lerpFrequency > 0) {
         const d = p.lerpFrequency;
         curHue = (curHue + (Math.random() * 2 - 1) * d + 360) % 360;
-        curSat = Math.max(0, Math.min(100, curSat + (Math.random() * 2 - 1) * d));
-        curBri = Math.max(0, Math.min(100, curBri + (Math.random() * 2 - 1) * d));
+        curSat = Math.max(
+          0,
+          Math.min(100, curSat + (Math.random() * 2 - 1) * d),
+        );
+        curBri = Math.max(
+          0,
+          Math.min(100, curBri + (Math.random() * 2 - 1) * d),
+        );
       }
 
       // set colors
       const [r, g, b] = hsvToRgb(curHue, curSat, curBri);
       ctx.strokeStyle = `rgba(${r},${g},${b},${p.alpha / 255})`;
-      ctx.fillStyle   = `rgba(${r},${g},${b},${p.opacity / 255})`;
+      ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity / 255})`;
 
       // compute random w/h
-      const factor = Math.random() * (p.maxSizeMultiplier - p.minSizeMultiplier) + p.minSizeMultiplier;
+      const factor =
+        Math.random() * (p.maxSizeMultiplier - p.minSizeMultiplier) +
+        p.minSizeMultiplier;
       const w = base * factor;
-      const h = p.heightRatio >= 0
-        ? w * (p.heightRatio / p.widthRatio)
-        : base * factor;
+      const h =
+        p.heightRatio >= 0 ? w * (p.heightRatio / p.widthRatio) : base * factor;
 
-      if (step === 'F') {
+      if (step === "F") {
         // line
         if (p.toggleFlags.line) {
           ctx.beginPath();
@@ -195,11 +216,15 @@ export default class CSystem extends LSystem {
 
         // scatter translation
         ctx.translate(p.scatter, p.scatter);
+      } else if (step === "+") ctx.rotate(this.theta);
+      else if (step === "-") ctx.rotate(-this.theta);
+      else if (step === "[") {
+        ctx.save();
+        pushes++;
+      } else if (step === "]") {
+        ctx.restore();
+        pushes--;
       }
-      else if (step === '+')      ctx.rotate(this.theta);
-      else if (step === '-')      ctx.rotate(-this.theta);
-      else if (step === '[')      { ctx.save(); pushes++; }
-      else if (step === ']')      { ctx.restore(); pushes--; }
       // ignore digits and other chars
     }
 

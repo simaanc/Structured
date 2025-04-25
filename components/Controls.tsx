@@ -97,39 +97,39 @@ const sliderConfigs: Array<{
   category: "system" | "appearance" | "size" | "shape";
 }> = [
   // System settings
-  { 
-    key: "gens", 
-    label: "Iterations", 
-    min: 1, 
-    max: 10, 
+  {
+    key: "gens",
+    label: "Iterations",
+    min: 1,
+    max: 10,
     step: 1,
-    category: "system" 
+    category: "system",
   },
-  { 
-    key: "complexity", 
-    label: "Max Primitives", 
-    min: 1, 
-    max: 2000, 
+  {
+    key: "complexity",
+    label: "Max Primitives",
+    min: 1,
+    max: 2000,
     step: 1,
-    category: "system" 
+    category: "system",
   },
-  { 
-    key: "axiomAmount", 
-    label: "Initial Branches", 
-    min: 1, 
-    max: 10, 
+  {
+    key: "axiomAmount",
+    label: "Initial Branches",
+    min: 1,
+    max: 10,
     step: 1,
-    category: "system" 
+    category: "system",
   },
-  { 
-    key: "thetaDeg", 
-    label: "Turn Angle (°)", 
-    min: 0, 
-    max: 360, 
+  {
+    key: "thetaDeg",
+    label: "Turn Angle (°)",
+    min: 0,
+    max: 360,
     step: 1,
-    category: "system" 
+    category: "system",
   },
-  
+
   // Size settings
   {
     key: "startLength",
@@ -137,15 +137,15 @@ const sliderConfigs: Array<{
     min: 10,
     max: 1000,
     step: 10,
-    category: "size"
+    category: "size",
   },
   {
-    key: "widthRatio", 
-    label: "Width/Height Ratio", 
-    min: 0, 
-    max: 5, 
+    key: "widthRatio",
+    label: "Width/Height Ratio",
+    min: 0,
+    max: 5,
     step: 0.1,
-    category: "size"
+    category: "size",
   },
   {
     key: "heightRatio",
@@ -153,7 +153,7 @@ const sliderConfigs: Array<{
     min: 0,
     max: 5,
     step: 0.1,
-    category: "size"
+    category: "size",
   },
   {
     key: "minSizeMultiplier",
@@ -161,7 +161,7 @@ const sliderConfigs: Array<{
     min: 0.01,
     max: 5,
     step: 0.01,
-    category: "size"
+    category: "size",
   },
   {
     key: "maxSizeMultiplier",
@@ -169,41 +169,41 @@ const sliderConfigs: Array<{
     min: 0.01,
     max: 5,
     step: 0.01,
-    category: "size"
+    category: "size",
   },
-  
+
   // Appearance settings
-  { 
-    key: "lerpFrequency", 
-    label: "Color Drift", 
-    min: 0, 
-    max: 20, 
+  {
+    key: "lerpFrequency",
+    label: "Color Drift",
+    min: 0,
+    max: 20,
     step: 0.5,
-    category: "appearance" 
+    category: "appearance",
   },
-  { 
-    key: "scatter", 
-    label: "Position Scatter", 
-    min: 0, 
-    max: 100, 
+  {
+    key: "scatter",
+    label: "Position Scatter",
+    min: 0,
+    max: 100,
     step: 1,
-    category: "appearance" 
+    category: "appearance",
   },
-  { 
-    key: "opacity", 
-    label: "Fill Opacity", 
-    min: 0, 
-    max: 255, 
+  {
+    key: "opacity",
+    label: "Fill Opacity",
+    min: 0,
+    max: 255,
     step: 1,
-    category: "appearance" 
+    category: "appearance",
   },
-  { 
-    key: "alpha", 
-    label: "Stroke Opacity", 
-    min: 0, 
-    max: 255, 
+  {
+    key: "alpha",
+    label: "Stroke Opacity",
+    min: 0,
+    max: 255,
     step: 1,
-    category: "appearance" 
+    category: "appearance",
   },
   {
     key: "strokeWeight",
@@ -211,7 +211,7 @@ const sliderConfigs: Array<{
     min: 1,
     max: 10,
     step: 0.5,
-    category: "appearance"
+    category: "appearance",
   },
 ];
 
@@ -253,17 +253,27 @@ export default function Controls({
   };
 
   // Group slider configs by category
-  const systemConfigs = sliderConfigs.filter(config => config.category === "system");
-  const sizeConfigs = sliderConfigs.filter(config => config.category === "size");
-  const appearanceConfigs = sliderConfigs.filter(config => config.category === "appearance");
+  const systemConfigs = sliderConfigs.filter(
+    (config) => config.category === "system",
+  );
+  const sizeConfigs = sliderConfigs.filter(
+    (config) => config.category === "size",
+  );
+  const appearanceConfigs = sliderConfigs.filter(
+    (config) => config.category === "appearance",
+  );
 
   // Render slider with text input
-  const renderSlider = ({ key, label, min, max, step }: typeof sliderConfigs[0]) => {
+  const renderSlider = ({
+    key,
+    label,
+    min,
+    max,
+    step,
+  }: (typeof sliderConfigs)[0]) => {
     return (
       <div key={key} className="mb-4">
-        <label className="block text-sm mb-1">
-          {label}
-        </label>
+        <label className="block text-sm mb-1">{label}</label>
         <div className="flex items-center space-x-2">
           <input
             type="range"
@@ -287,7 +297,8 @@ export default function Controls({
             value={params[key] as number}
             className="w-16 px-2 py-1 bg-gray-700 rounded text-white text-right appearance-textfield"
             onChange={(e) => {
-              const rawValue = e.target.value === "" ? min : Number(e.target.value);
+              const rawValue =
+                e.target.value === "" ? min : Number(e.target.value);
               const clampedValue = clampValue(rawValue, min, max);
               setParams((prev) => ({
                 ...prev,
@@ -296,7 +307,8 @@ export default function Controls({
             }}
             onBlur={(e) => {
               // Ensure displayed value is clamped on blur
-              const rawValue = e.target.value === "" ? min : Number(e.target.value);
+              const rawValue =
+                e.target.value === "" ? min : Number(e.target.value);
               const clampedValue = clampValue(rawValue, min, max);
               setParams((prev) => ({
                 ...prev,
@@ -315,31 +327,40 @@ export default function Controls({
 
       <button
         onClick={onGenerate}
-        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold">
+        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold"
+      >
         Generate New (Enter)
       </button>
 
       {/* System Settings */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">System</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          System
+        </h3>
         {systemConfigs.map(renderSlider)}
       </div>
-      
+
       {/* Size Settings */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Size & Proportions</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          Size & Proportions
+        </h3>
         {sizeConfigs.map(renderSlider)}
       </div>
-      
+
       {/* Appearance Settings */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Appearance</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          Appearance
+        </h3>
         {appearanceConfigs.map(renderSlider)}
       </div>
 
       {/* Color Picker */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Base Color</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          Base Color
+        </h3>
         <HsvColorPicker
           className="w-full h-32 mb-2"
           color={{ h: params.startHue, s: params.startSat, v: params.startBri }}
@@ -376,14 +397,16 @@ export default function Controls({
               max={360}
               value={params.startHue}
               onChange={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
                   startHue: clampValue(value, 0, 360),
                 }));
               }}
               onBlur={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
                   startHue: clampValue(value, 0, 360),
@@ -400,14 +423,16 @@ export default function Controls({
               max={100}
               value={params.startSat}
               onChange={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
                   startSat: clampValue(value, 0, 100),
                 }));
               }}
               onBlur={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
                   startSat: clampValue(value, 0, 100),
@@ -424,14 +449,16 @@ export default function Controls({
               max={100}
               value={params.startBri}
               onChange={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
                   startBri: clampValue(value, 0, 100),
                 }));
               }}
               onBlur={(e) => {
-                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                const value =
+                  e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
                   startBri: clampValue(value, 0, 100),
@@ -445,7 +472,9 @@ export default function Controls({
 
       {/* Shape Toggles */}
       <div className="mb-4">
-        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Shapes</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          Shapes
+        </h3>
         <div className="grid grid-cols-2 gap-2">
           {shapes.map((shape) => (
             <label key={shape} className="flex items-center space-x-2">
@@ -471,7 +500,9 @@ export default function Controls({
 
       {/* Fill Toggles */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Fills</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          Fills
+        </h3>
         <div className="grid grid-cols-2 gap-2">
           {fills.map((fill) => (
             <label key={fill} className="flex items-center space-x-2">
@@ -514,7 +545,8 @@ export default function Controls({
           a.download = "structure.svg";
           a.click();
           URL.revokeObjectURL(url);
-        }}>
+        }}
+      >
         Save as SVG
       </button>
     </aside>

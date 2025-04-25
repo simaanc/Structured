@@ -1,10 +1,10 @@
 // app/page.tsx
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { Params } from '../types/types';
-import Controls from '../components/Controls';
-import StructuredCanvas from '../components/StructuredCanvas';
+import { useState, useEffect, useCallback } from "react";
+import { Params } from "../types/types";
+import Controls from "../components/Controls";
+import StructuredCanvas from "../components/StructuredCanvas";
 
 export default function Page() {
   const [params, setParams] = useState<Params>({
@@ -42,13 +42,13 @@ export default function Page() {
 
   // trigger state for “Generate”
   const [trigger, setTrigger] = useState(0);
-  const onGenerate = useCallback(() => setTrigger(t => t + 1), []);
+  const onGenerate = useCallback(() => setTrigger((t) => t + 1), []);
 
   // hit Enter to regenerate
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Enter' && onGenerate();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const onKey = (e: KeyboardEvent) => e.key === "Enter" && onGenerate();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [onGenerate]);
 
   return (
