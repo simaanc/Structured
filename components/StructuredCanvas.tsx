@@ -1,16 +1,16 @@
 // components/StructuredCanvas.tsx
-"use client";
-
 import React, { useRef, useEffect } from "react";
 import LSystem from "../systems/LSystem";
 import { Params } from "../types/types";
+import { getSeededRandom } from "../utils/seedSystem";
 
 interface CanvasProps {
   params: Params;
   trigger: number;
+  randomSeed?: string; // Add this to pass in the random seed
 }
 
-export default function StructuredCanvas({ params, trigger }: CanvasProps) {
+export default function StructuredCanvas({ params, trigger, randomSeed }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -27,10 +27,14 @@ export default function StructuredCanvas({ params, trigger }: CanvasProps) {
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const lsystem = new LSystem({ params });
+    // Create a seeded random function if a seed is provided
+    const randomFunc = randomSeed ? getSeededRandom(randomSeed) : undefined;
+
+    // Pass the seeded random function to the LSystem
+    const lsystem = new LSystem({ params, randomFunc });
     lsystem.simulate(params.gens);
     lsystem.render(ctx, canvas.width, canvas.height);
-  }, [trigger]); // only re-run when trigger changes
+  }, [trigger, randomSeed, params]); // Add randomSeed and params to dependencies
 
   return (
     <canvas

@@ -6,6 +6,7 @@ import { HsvColorPicker } from "react-colorful";
 import LSystem from "../systems/LSystem";
 import C2S from "canvas2svg";
 import { Params } from "../types/types";
+import { encodeToSeed } from "../utils/seedSystem";
 
 /** HSB → RGB */
 function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
@@ -235,18 +236,26 @@ interface ControlsProps {
   params: Params;
   setParams: React.Dispatch<React.SetStateAction<Params>>;
   onGenerate: () => void;
+  loadSeed: (seedString: string) => void;
+  randomSeed?: string;
 }
 
 export default function Controls({
   params,
   setParams,
   onGenerate,
+  loadSeed,
+  randomSeed,
 }: ControlsProps) {
   const rgb = hsvToRgb(params.startHue, params.startSat, params.startBri);
   const hex = rgbToHex(rgb);
-  
+
   // Add state for hex input value
   const [hexInputValue, setHexInputValue] = useState(hex);
+
+  // Add state for seed functionality
+  const [seedInput, setSeedInput] = useState<string>("");
+  const [seedError, setSeedError] = useState<string | null>(null);
 
   // Helper to ensure value stays within min/max bounds
   const clampValue = (value: number, min: number, max: number) => {
@@ -255,14 +264,44 @@ export default function Controls({
 
   // Group slider configs by category
   const systemConfigs = sliderConfigs.filter(
-    (config) => config.category === "system",
+    (config) => config.category === "system"
   );
   const sizeConfigs = sliderConfigs.filter(
-    (config) => config.category === "size",
+    (config) => config.category === "size"
   );
   const appearanceConfigs = sliderConfigs.filter(
-    (config) => config.category === "appearance",
+    (config) => config.category === "appearance"
   );
+
+  // Function to copy the current seed to clipboard
+  const copyCurrentSeed = () => {
+    // Pass the current randomSeed to ensure it stays consistent
+    const seed = encodeToSeed(params, randomSeed);
+    navigator.clipboard.writeText(seed);
+    // Show a temporary success message
+    setSeedInput("✓ Copied to clipboard!");
+    setTimeout(() => setSeedInput(""), 2000);
+  };
+
+  // Function to load a seed from the input
+  const handleSeedLoad = () => {
+    if (!seedInput.trim()) {
+      setSeedError("Please enter a seed code");
+      return;
+    }
+
+    setSeedError(null);
+
+    try {
+      loadSeed(seedInput);
+      setSeedInput(""); // Clear the input
+    } catch (error) {
+      setSeedError(
+        "Failed to decode seed: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
+    }
+  };
 
   // Render slider with text input
   const renderSlider = ({
@@ -328,8 +367,7 @@ export default function Controls({
 
       <button
         onClick={onGenerate}
-        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold"
-      >
+        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold">
         Generate New (Enter)
       </button>
 
@@ -362,7 +400,7 @@ export default function Controls({
         <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
           Base Color
         </h3>
-        
+
         {/* HSV Color Picker from react-colorful */}
         <HsvColorPicker
           className="w-full h-32 mb-2"
@@ -379,11 +417,11 @@ export default function Controls({
             setHexInputValue(rgbToHex(newRgb));
           }}
         />
-        
+
         {/* Custom Hex Color Input with Color Preview */}
         <div className="flex mb-2 overflow-hidden rounded bg-gray-700">
-          <div 
-            className="w-8 h-8 flex-shrink-0" 
+          <div
+            className="w-8 h-8 flex-shrink-0"
             style={{ backgroundColor: hex }}
           />
           <input
@@ -393,12 +431,12 @@ export default function Controls({
             onChange={(e) => {
               // Always update the local state to allow clearing the input
               setHexInputValue(e.target.value);
-              
+
               // Only update the actual color if it's a valid hex
               if (/^#?([0-9A-F]{6})$/i.test(e.target.value)) {
                 let newHex = e.target.value;
-                if (!newHex.startsWith('#')) newHex = '#' + newHex;
-                
+                if (!newHex.startsWith("#")) newHex = "#" + newHex;
+
                 const rgb = hexToRgb(newHex);
                 if (rgb) {
                   const [h, s, v] = rgbToHsv(...rgb);
@@ -415,14 +453,17 @@ export default function Controls({
               // On blur, reset to the current valid color if input is invalid
               if (!/^#?([0-9A-F]{6})$/i.test(hexInputValue)) {
                 setHexInputValue(hex);
-              } else if (!hexInputValue.startsWith('#') && hexInputValue.length === 6) {
-                setHexInputValue('#' + hexInputValue);
+              } else if (
+                !hexInputValue.startsWith("#") &&
+                hexInputValue.length === 6
+              ) {
+                setHexInputValue("#" + hexInputValue);
               }
             }}
             placeholder="#RRGGBB"
           />
         </div>
-        
+
         {/* HSV Numeric Inputs */}
         <div className="flex space-x-2">
           <div>
@@ -440,9 +481,13 @@ export default function Controls({
                   ...prev,
                   startHue: newHue,
                 }));
-                
+
                 // Update hex input value when HSV changes
-                const newRgb = hsvToRgb(newHue, params.startSat, params.startBri);
+                const newRgb = hsvToRgb(
+                  newHue,
+                  params.startSat,
+                  params.startBri
+                );
                 setHexInputValue(rgbToHex(newRgb));
               }}
               onBlur={(e) => {
@@ -471,9 +516,13 @@ export default function Controls({
                   ...prev,
                   startSat: newSat,
                 }));
-                
+
                 // Update hex input value when HSV changes
-                const newRgb = hsvToRgb(params.startHue, newSat, params.startBri);
+                const newRgb = hsvToRgb(
+                  params.startHue,
+                  newSat,
+                  params.startBri
+                );
                 setHexInputValue(rgbToHex(newRgb));
               }}
               onBlur={(e) => {
@@ -502,9 +551,13 @@ export default function Controls({
                   ...prev,
                   startBri: newBri,
                 }));
-                
+
                 // Update hex input value when HSV changes
-                const newRgb = hsvToRgb(params.startHue, params.startSat, newBri);
+                const newRgb = hsvToRgb(
+                  params.startHue,
+                  params.startSat,
+                  newBri
+                );
                 setHexInputValue(rgbToHex(newRgb));
               }}
               onBlur={(e) => {
@@ -579,6 +632,42 @@ export default function Controls({
         </div>
       </div>
 
+      {/* Share & Import Section */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
+          Share & Import
+        </h3>
+
+        <div className="mb-3">
+          <button
+            onClick={copyCurrentSeed}
+            className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">
+            Copy Seed to Clipboard
+          </button>
+        </div>
+
+        <div className="mb-1">
+          <label className="block text-sm mb-1">Import Seed:</label>
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              className="flex-grow px-2 py-1 bg-gray-700 rounded text-white"
+              value={seedInput}
+              onChange={(e) => setSeedInput(e.target.value)}
+              placeholder="Paste seed code here..."
+            />
+            <button
+              onClick={handleSeedLoad}
+              className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded-lg">
+              Load
+            </button>
+          </div>
+          {seedError && (
+            <p className="text-red-400 text-sm mt-1">{seedError}</p>
+          )}
+        </div>
+      </div>
+
       {/* Export Button */}
       <button
         className="mt-auto py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold"
@@ -587,12 +676,12 @@ export default function Controls({
           const w = window.innerWidth - sidebar;
           const h = window.innerHeight;
           const svgCtx = new C2S(w, h);
-          
+
           // Use the unified LSystem class
           const lsystem = new LSystem({ params });
           lsystem.simulate(params.gens);
           lsystem.render(svgCtx, w, h);
-          
+
           const svg = svgCtx.getSerializedSvg();
           const blob = new Blob([svg], { type: "image/svg+xml" });
           const url = URL.createObjectURL(blob);
@@ -601,8 +690,7 @@ export default function Controls({
           a.download = "structure.svg";
           a.click();
           URL.revokeObjectURL(url);
-        }}
-      >
+        }}>
         Save as SVG
       </button>
     </aside>

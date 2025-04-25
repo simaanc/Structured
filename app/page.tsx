@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Params } from "../types/types";
 import Controls from "../components/Controls";
 import StructuredCanvas from "../components/StructuredCanvas";
+import { decodeFromSeed } from "../utils/seedSystem";
 
 export default function Page() {
   const [params, setParams] = useState<Params>({
@@ -40,9 +41,31 @@ export default function Page() {
     },
   });
 
-  // trigger state for “Generate”
+  // Add state for random seed
+  const [randomSeed, setRandomSeed] = useState<string | undefined>(undefined);
+  
+  // trigger state for "Generate"
   const [trigger, setTrigger] = useState(0);
-  const onGenerate = useCallback(() => setTrigger((t) => t + 1), []);
+  
+  // Update onGenerate to set a new random seed
+  const onGenerate = useCallback(() => {
+    setRandomSeed(Math.random().toString(36).substring(2, 15));
+    setTrigger((t) => t + 1);
+  }, []);
+
+  // Function to load a seed
+  const loadSeed = useCallback((seedString: string) => {
+    try {
+      const seedData = decodeFromSeed(seedString);
+      if (seedData) {
+        setParams(seedData.params);
+        setRandomSeed(seedData.randomSeed);
+        setTrigger((t) => t + 1); // Trigger a re-render
+      }
+    } catch (error) {
+      console.error("Failed to decode seed:", error);
+    }
+  }, []);
 
   // hit Enter to regenerate
   useEffect(() => {
@@ -53,8 +76,18 @@ export default function Page() {
 
   return (
     <main className="flex h-screen">
-      <Controls params={params} setParams={setParams} onGenerate={onGenerate} />
-      <StructuredCanvas params={params} trigger={trigger} />
+      <Controls 
+        params={params} 
+        setParams={setParams} 
+        onGenerate={onGenerate} 
+        loadSeed={loadSeed}
+        randomSeed={randomSeed}
+      />
+      <StructuredCanvas 
+        params={params} 
+        trigger={trigger}
+        randomSeed={randomSeed}
+      />
     </main>
   );
 }
