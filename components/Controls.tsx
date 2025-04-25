@@ -87,30 +87,81 @@ type NumericKey =
   | "alpha"
   | "strokeWeight";
 
+// Reorganized slider configs grouped by categories
 const sliderConfigs: Array<{
   key: NumericKey;
   label: string;
   min: number;
   max: number;
   step: number;
+  category: "system" | "appearance" | "size" | "shape";
 }> = [
-  { key: "gens", label: "Iterations", min: 1, max: 10, step: 1 },
-  { key: "axiomAmount", label: "Initial Branches", min: 1, max: 10, step: 1 },
+  // System settings
+  { 
+    key: "gens", 
+    label: "Iterations", 
+    min: 1, 
+    max: 10, 
+    step: 1,
+    category: "system" 
+  },
+  { 
+    key: "complexity", 
+    label: "Max Primitives", 
+    min: 1, 
+    max: 2000, 
+    step: 1,
+    category: "system" 
+  },
+  { 
+    key: "axiomAmount", 
+    label: "Initial Branches", 
+    min: 1, 
+    max: 10, 
+    step: 1,
+    category: "system" 
+  },
+  { 
+    key: "thetaDeg", 
+    label: "Turn Angle (°)", 
+    min: 0, 
+    max: 360, 
+    step: 1,
+    category: "system" 
+  },
+  
+  // Size settings
   {
     key: "startLength",
     label: "Base Segment Length",
     min: 10,
     max: 1000,
     step: 10,
+    category: "size"
   },
-  { key: "complexity", label: "Max Primitives", min: 1, max: 2000, step: 1 },
-  { key: "lerpFrequency", label: "Color Drift", min: 0, max: 20, step: 0.5 },
+  {
+    key: "widthRatio", 
+    label: "Width/Height Ratio", 
+    min: 0, 
+    max: 5, 
+    step: 0.1,
+    category: "size"
+  },
+  {
+    key: "heightRatio",
+    label: "Height/Width Ratio",
+    min: 0,
+    max: 5,
+    step: 0.1,
+    category: "size"
+  },
   {
     key: "minSizeMultiplier",
     label: "Min Size Factor",
     min: 0.01,
     max: 5,
     step: 0.01,
+    category: "size"
   },
   {
     key: "maxSizeMultiplier",
@@ -118,25 +169,49 @@ const sliderConfigs: Array<{
     min: 0.01,
     max: 5,
     step: 0.01,
+    category: "size"
   },
-  { key: "widthRatio", label: "Width/Height Ratio", min: 0, max: 5, step: 0.1 },
-  {
-    key: "heightRatio",
-    label: "Height/Width Ratio",
-    min: 0,
-    max: 5,
-    step: 0.1,
+  
+  // Appearance settings
+  { 
+    key: "lerpFrequency", 
+    label: "Color Drift", 
+    min: 0, 
+    max: 20, 
+    step: 0.5,
+    category: "appearance" 
   },
-  { key: "scatter", label: "Position Scatter", min: 0, max: 100, step: 1 },
-  { key: "thetaDeg", label: "Turn Angle (°)", min: 0, max: 360, step: 1 },
-  { key: "opacity", label: "Fill Opacity", min: 0, max: 255, step: 1 },
-  { key: "alpha", label: "Stroke Opacity", min: 0, max: 255, step: 1 },
+  { 
+    key: "scatter", 
+    label: "Position Scatter", 
+    min: 0, 
+    max: 100, 
+    step: 1,
+    category: "appearance" 
+  },
+  { 
+    key: "opacity", 
+    label: "Fill Opacity", 
+    min: 0, 
+    max: 255, 
+    step: 1,
+    category: "appearance" 
+  },
+  { 
+    key: "alpha", 
+    label: "Stroke Opacity", 
+    min: 0, 
+    max: 255, 
+    step: 1,
+    category: "appearance" 
+  },
   {
     key: "strokeWeight",
     label: "Stroke Thickness",
     min: 1,
     max: 10,
     step: 0.5,
+    category: "appearance"
   },
 ];
 
@@ -172,28 +247,31 @@ export default function Controls({
     return rgbToHex(rgb);
   }, [params.startHue, params.startSat, params.startBri]);
 
-  return (
-    <aside className="fixed right-0 top-0 h-full w-80 p-6 bg-gray-900 text-white flex flex-col overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Controls</h2>
+  // Helper to ensure value stays within min/max bounds
+  const clampValue = (value: number, min: number, max: number) => {
+    return Math.min(max, Math.max(min, value));
+  };
 
-      <button
-        onClick={onGenerate}
-        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold">
-        Generate New
-      </button>
+  // Group slider configs by category
+  const systemConfigs = sliderConfigs.filter(config => config.category === "system");
+  const sizeConfigs = sliderConfigs.filter(config => config.category === "size");
+  const appearanceConfigs = sliderConfigs.filter(config => config.category === "appearance");
 
-      {sliderConfigs.map(({ key, label, min, max, step }) => (
-        <div key={key} className="mb-4">
-          <label className="block text-sm mb-1">
-            {label}: {params[key]}
-          </label>
+  // Render slider with text input
+  const renderSlider = ({ key, label, min, max, step }: typeof sliderConfigs[0]) => {
+    return (
+      <div key={key} className="mb-4">
+        <label className="block text-sm mb-1">
+          {label}
+        </label>
+        <div className="flex items-center space-x-2">
           <input
             type="range"
             min={min}
             max={max}
             step={step}
             value={params[key] as number}
-            className="w-full h-2 bg-gray-700 rounded-lg"
+            className="flex-grow h-2 bg-gray-700 rounded-lg"
             onChange={(e) =>
               setParams((prev) => ({
                 ...prev,
@@ -201,63 +279,67 @@ export default function Controls({
               }))
             }
           />
+          <input
+            type="number"
+            min={min}
+            max={max}
+            step={step}
+            value={params[key] as number}
+            className="w-16 px-2 py-1 bg-gray-700 rounded text-white text-right appearance-textfield"
+            onChange={(e) => {
+              const rawValue = e.target.value === "" ? min : Number(e.target.value);
+              const clampedValue = clampValue(rawValue, min, max);
+              setParams((prev) => ({
+                ...prev,
+                [key]: clampedValue,
+              }));
+            }}
+            onBlur={(e) => {
+              // Ensure displayed value is clamped on blur
+              const rawValue = e.target.value === "" ? min : Number(e.target.value);
+              const clampedValue = clampValue(rawValue, min, max);
+              setParams((prev) => ({
+                ...prev,
+                [key]: clampedValue,
+              }));
+            }}
+          />
         </div>
-      ))}
+      </div>
+    );
+  };
 
+  return (
+    <aside className="fixed right-0 top-0 h-full w-80 p-6 bg-gray-900 text-white flex flex-col overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-4">Controls</h2>
+
+      <button
+        onClick={onGenerate}
+        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold">
+        Generate New (Enter)
+      </button>
+
+      {/* System Settings */}
       <div className="mb-4">
-        <h3 className="font-semibold mb-2">Enable Shapes</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {shapes.map((shape) => (
-            <label key={shape} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={params.toggleFlags[shape]}
-                onChange={(e) =>
-                  setParams((prev) => ({
-                    ...prev,
-                    toggleFlags: {
-                      ...prev.toggleFlags,
-                      [shape]: e.target.checked,
-                    },
-                  }))
-                }
-                className="w-5 h-5 text-blue-400 bg-gray-700 rounded border-gray-600"
-              />
-              <span className="capitalize">{shape}</span>
-            </label>
-          ))}
-        </div>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">System</h3>
+        {systemConfigs.map(renderSlider)}
+      </div>
+      
+      {/* Size Settings */}
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Size & Proportions</h3>
+        {sizeConfigs.map(renderSlider)}
+      </div>
+      
+      {/* Appearance Settings */}
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Appearance</h3>
+        {appearanceConfigs.map(renderSlider)}
       </div>
 
+      {/* Color Picker */}
       <div className="mb-6">
-        <h3 className="font-semibold mb-2">Enable Fills</h3>
-        <div className="grid grid-cols-2 gap-2">
-          {fills.map((fill) => (
-            <label key={fill} className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={params.toggleFlags[fill]}
-                onChange={(e) =>
-                  setParams((prev) => ({
-                    ...prev,
-                    toggleFlags: {
-                      ...prev.toggleFlags,
-                      [fill]: e.target.checked,
-                    },
-                  }))
-                }
-                className="w-5 h-5 text-green-400 bg-gray-700 rounded border-gray-600"
-              />
-              <span className="capitalize">
-                {fill.replace("Fill", " Fill")}
-              </span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-6">
-        <h3 className="font-semibold mb-2">Base Color</h3>
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Base Color</h3>
         <HsvColorPicker
           className="w-full h-32 mb-2"
           color={{ h: params.startHue, s: params.startSat, v: params.startBri }}
@@ -293,13 +375,21 @@ export default function Controls({
               min={0}
               max={360}
               value={params.startHue}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
-                  startHue: Math.min(360, Math.max(0, Number(e.target.value))),
-                }))
-              }
-              className="w-20 px-1 py-0.5 bg-gray-700 rounded text-white"
+                  startHue: clampValue(value, 0, 360),
+                }));
+              }}
+              onBlur={(e) => {
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                setParams((prev) => ({
+                  ...prev,
+                  startHue: clampValue(value, 0, 360),
+                }));
+              }}
+              className="w-16 px-2 py-0.5 bg-gray-700 rounded text-white text-right appearance-textfield"
             />
           </div>
           <div>
@@ -309,12 +399,20 @@ export default function Controls({
               min={0}
               max={100}
               value={params.startSat}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
-                  startSat: Math.min(100, Math.max(0, Number(e.target.value))),
-                }))
-              }
+                  startSat: clampValue(value, 0, 100),
+                }));
+              }}
+              onBlur={(e) => {
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                setParams((prev) => ({
+                  ...prev,
+                  startSat: clampValue(value, 0, 100),
+                }));
+              }}
               className="w-20 px-1 py-0.5 bg-gray-700 rounded text-white"
             />
           </div>
@@ -325,18 +423,81 @@ export default function Controls({
               min={0}
               max={100}
               value={params.startBri}
-              onChange={(e) =>
+              onChange={(e) => {
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
                 setParams((prev) => ({
                   ...prev,
-                  startBri: Math.min(100, Math.max(0, Number(e.target.value))),
-                }))
-              }
+                  startBri: clampValue(value, 0, 100),
+                }));
+              }}
+              onBlur={(e) => {
+                const value = e.target.value === "" ? 0 : Number(e.target.value);
+                setParams((prev) => ({
+                  ...prev,
+                  startBri: clampValue(value, 0, 100),
+                }));
+              }}
               className="w-20 px-1 py-0.5 bg-gray-700 rounded text-white"
             />
           </div>
         </div>
       </div>
 
+      {/* Shape Toggles */}
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Shapes</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {shapes.map((shape) => (
+            <label key={shape} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={params.toggleFlags[shape]}
+                onChange={(e) =>
+                  setParams((prev) => ({
+                    ...prev,
+                    toggleFlags: {
+                      ...prev.toggleFlags,
+                      [shape]: e.target.checked,
+                    },
+                  }))
+                }
+                className="w-5 h-5 text-blue-400 bg-gray-700 rounded border-gray-600"
+              />
+              <span className="capitalize">{shape}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Fill Toggles */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">Fills</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {fills.map((fill) => (
+            <label key={fill} className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={params.toggleFlags[fill]}
+                onChange={(e) =>
+                  setParams((prev) => ({
+                    ...prev,
+                    toggleFlags: {
+                      ...prev.toggleFlags,
+                      [fill]: e.target.checked,
+                    },
+                  }))
+                }
+                className="w-5 h-5 text-green-400 bg-gray-700 rounded border-gray-600"
+              />
+              <span className="capitalize">
+                {fill.replace("Fill", " Fill")}
+              </span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Export Button */}
       <button
         className="mt-auto py-3 bg-blue-500 hover:bg-blue-600 rounded-lg font-semibold"
         onClick={() => {
