@@ -129,6 +129,14 @@ const sliderConfigs: Array<{
     step: 1,
     category: "system",
   },
+  {
+    key: "scatter",
+    label: "Position Scatter",
+    min: 0,
+    max: 100,
+    step: 1,
+    category: "system",
+  },
 
   // Size settings
   {
@@ -180,14 +188,6 @@ const sliderConfigs: Array<{
     max: 20,
     step: 0.5,
     category: "appearance",
-  },
-  {
-    key: "scatter",
-    label: "Position Scatter",
-    min: 0,
-    max: 100,
-    step: 1,
-    category: "system",
   },
   {
     key: "opacity",
