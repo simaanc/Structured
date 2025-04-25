@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import CSystem from "../systems/CSystem";
+import LSystem from "../systems/LSystem";
 import { Params } from "../types/types";
 
 interface CanvasProps {
@@ -27,8 +27,9 @@ export default function StructuredCanvas({ params, trigger }: CanvasProps) {
     ctx.fillStyle = "#000";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const cs = new CSystem(params);
-    cs.render(ctx, canvas.width, canvas.height);
+    const lsystem = new LSystem({ params });
+    lsystem.simulate(params.gens);
+    lsystem.render(ctx, canvas.width, canvas.height);
   }, [trigger]); // only re-run when trigger changes
 
   return (

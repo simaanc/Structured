@@ -1,9 +1,9 @@
 // components/Controls.tsx
 "use client";
 
-import React from "react";
-import { HsvColorPicker, HexColorInput } from "react-colorful";
-import CSystem from "../systems/CSystem";
+import React, { useState } from "react";
+import { HsvColorPicker } from "react-colorful";
+import LSystem from "../systems/LSystem";
 import C2S from "canvas2svg";
 import { Params } from "../types/types";
 
@@ -242,10 +242,11 @@ export default function Controls({
   setParams,
   onGenerate,
 }: ControlsProps) {
-  const hex = React.useMemo(() => {
-    const rgb = hsvToRgb(params.startHue, params.startSat, params.startBri);
-    return rgbToHex(rgb);
-  }, [params.startHue, params.startSat, params.startBri]);
+  const rgb = hsvToRgb(params.startHue, params.startSat, params.startBri);
+  const hex = rgbToHex(rgb);
+  
+  // Add state for hex input value
+  const [hexInputValue, setHexInputValue] = useState(hex);
 
   // Helper to ensure value stays within min/max bounds
   const clampValue = (value: number, min: number, max: number) => {
@@ -361,33 +362,68 @@ export default function Controls({
         <h3 className="text-lg font-semibold border-b border-gray-700 pb-1 mb-3">
           Base Color
         </h3>
+        
+        {/* HSV Color Picker from react-colorful */}
         <HsvColorPicker
           className="w-full h-32 mb-2"
           color={{ h: params.startHue, s: params.startSat, v: params.startBri }}
-          onChange={(c) =>
+          onChange={(c) => {
             setParams((prev) => ({
               ...prev,
               startHue: c.h,
               startSat: c.s,
               startBri: c.v,
-            }))
-          }
-        />
-        <HexColorInput
-          className="w-full mb-2 px-2 py-1 bg-gray-700 rounded text-white"
-          color={hex}
-          onChange={(newHex) => {
-            const rgb = hexToRgb(newHex);
-            if (!rgb) return;
-            const [h, s, v] = rgbToHsv(...rgb);
-            setParams((prev) => ({
-              ...prev,
-              startHue: Math.round(h),
-              startSat: Math.round(s),
-              startBri: Math.round(v),
             }));
+            // Update our controlled hex input value when color changes from picker
+            const newRgb = hsvToRgb(c.h, c.s, c.v);
+            setHexInputValue(rgbToHex(newRgb));
           }}
         />
+        
+        {/* Custom Hex Color Input with Color Preview */}
+        <div className="flex mb-2 overflow-hidden rounded bg-gray-700">
+          <div 
+            className="w-8 h-8 flex-shrink-0" 
+            style={{ backgroundColor: hex }}
+          />
+          <input
+            type="text"
+            value={hexInputValue}
+            className="flex-grow px-2 py-1 bg-gray-700 text-white outline-none border-none"
+            onChange={(e) => {
+              // Always update the local state to allow clearing the input
+              setHexInputValue(e.target.value);
+              
+              // Only update the actual color if it's a valid hex
+              if (/^#?([0-9A-F]{6})$/i.test(e.target.value)) {
+                let newHex = e.target.value;
+                if (!newHex.startsWith('#')) newHex = '#' + newHex;
+                
+                const rgb = hexToRgb(newHex);
+                if (rgb) {
+                  const [h, s, v] = rgbToHsv(...rgb);
+                  setParams((prev) => ({
+                    ...prev,
+                    startHue: Math.round(h),
+                    startSat: Math.round(s),
+                    startBri: Math.round(v),
+                  }));
+                }
+              }
+            }}
+            onBlur={() => {
+              // On blur, reset to the current valid color if input is invalid
+              if (!/^#?([0-9A-F]{6})$/i.test(hexInputValue)) {
+                setHexInputValue(hex);
+              } else if (!hexInputValue.startsWith('#') && hexInputValue.length === 6) {
+                setHexInputValue('#' + hexInputValue);
+              }
+            }}
+            placeholder="#RRGGBB"
+          />
+        </div>
+        
+        {/* HSV Numeric Inputs */}
         <div className="flex space-x-2">
           <div>
             <label className="text-sm block">Hue</label>
@@ -399,10 +435,15 @@ export default function Controls({
               onChange={(e) => {
                 const value =
                   e.target.value === "" ? 0 : Number(e.target.value);
+                const newHue = clampValue(value, 0, 360);
                 setParams((prev) => ({
                   ...prev,
-                  startHue: clampValue(value, 0, 360),
+                  startHue: newHue,
                 }));
+                
+                // Update hex input value when HSV changes
+                const newRgb = hsvToRgb(newHue, params.startSat, params.startBri);
+                setHexInputValue(rgbToHex(newRgb));
               }}
               onBlur={(e) => {
                 const value =
@@ -425,10 +466,15 @@ export default function Controls({
               onChange={(e) => {
                 const value =
                   e.target.value === "" ? 0 : Number(e.target.value);
+                const newSat = clampValue(value, 0, 100);
                 setParams((prev) => ({
                   ...prev,
-                  startSat: clampValue(value, 0, 100),
+                  startSat: newSat,
                 }));
+                
+                // Update hex input value when HSV changes
+                const newRgb = hsvToRgb(params.startHue, newSat, params.startBri);
+                setHexInputValue(rgbToHex(newRgb));
               }}
               onBlur={(e) => {
                 const value =
@@ -451,10 +497,15 @@ export default function Controls({
               onChange={(e) => {
                 const value =
                   e.target.value === "" ? 0 : Number(e.target.value);
+                const newBri = clampValue(value, 0, 100);
                 setParams((prev) => ({
                   ...prev,
-                  startBri: clampValue(value, 0, 100),
+                  startBri: newBri,
                 }));
+                
+                // Update hex input value when HSV changes
+                const newRgb = hsvToRgb(params.startHue, params.startSat, newBri);
+                setHexInputValue(rgbToHex(newRgb));
               }}
               onBlur={(e) => {
                 const value =
@@ -536,7 +587,12 @@ export default function Controls({
           const w = window.innerWidth - sidebar;
           const h = window.innerHeight;
           const svgCtx = new C2S(w, h);
-          new CSystem(params).render(svgCtx, w, h);
+          
+          // Use the unified LSystem class
+          const lsystem = new LSystem({ params });
+          lsystem.simulate(params.gens);
+          lsystem.render(svgCtx, w, h);
+          
           const svg = svgCtx.getSerializedSvg();
           const blob = new Blob([svg], { type: "image/svg+xml" });
           const url = URL.createObjectURL(blob);
