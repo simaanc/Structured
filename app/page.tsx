@@ -6,7 +6,11 @@ import { Params } from "../types/types";
 import Controls from "../components/Controls";
 import StructuredCanvas from "../components/StructuredCanvas";
 import { decodeFromSeed } from "../utils/seedSystem";
-import { saveParamsToCookies, loadParamsFromCookies, clearParamsCookie, isBrowser } from "../utils/cookieStorage";
+import {
+  saveParamsToCookies,
+  loadParamsFromCookies,
+  clearParamsCookie,
+} from "../utils/cookieStorage";
 
 // Default parameters configuration
 const DEFAULT_PARAMS: Params = {
@@ -46,18 +50,18 @@ export default function Page() {
   // State for loading status to prevent hydration mismatch
   const [isClient, setIsClient] = useState(false);
   const [params, setParams] = useState<Params>(DEFAULT_PARAMS);
-  
+
   // Add state for random seed
   const [randomSeed, setRandomSeed] = useState<string | undefined>(undefined);
-  
+
   // Trigger state for "Generate"
   const [trigger, setTrigger] = useState(0);
-  
+
   // First, mark client-side rendering on component mount
   useEffect(() => {
     setIsClient(true);
   }, []);
-  
+
   // Load saved parameters from cookies after client is ready
   useEffect(() => {
     if (isClient) {
@@ -67,14 +71,14 @@ export default function Page() {
       }
     }
   }, [isClient]);
-  
+
   // Save parameters to cookies whenever they change (only after client is ready)
   useEffect(() => {
     if (isClient) {
       saveParamsToCookies(params);
     }
   }, [params, isClient]);
-  
+
   // Update onGenerate to set a new random seed
   const onGenerate = useCallback(() => {
     setRandomSeed(Math.random().toString(36).substring(2, 15));
@@ -105,7 +109,7 @@ export default function Page() {
   // Hit Enter to regenerate
   useEffect(() => {
     if (!isClient) return;
-    
+
     const onKey = (e: KeyboardEvent) => e.key === "Enter" && onGenerate();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -119,16 +123,16 @@ export default function Page() {
       */}
       {isClient ? (
         <>
-          <Controls 
-            params={params} 
-            setParams={setParams} 
-            onGenerate={onGenerate} 
+          <Controls
+            params={params}
+            setParams={setParams}
+            onGenerate={onGenerate}
             loadSeed={loadSeed}
             randomSeed={randomSeed}
             resetToDefaults={resetToDefaults}
           />
-          <StructuredCanvas 
-            params={params} 
+          <StructuredCanvas
+            params={params}
             trigger={trigger}
             randomSeed={randomSeed}
           />
