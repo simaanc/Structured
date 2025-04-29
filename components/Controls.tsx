@@ -238,6 +238,7 @@ interface ControlsProps {
   onGenerate: () => void;
   loadSeed: (seedString: string) => void;
   randomSeed?: string;
+  resetToDefaults?: () => void; // New prop for resetting to defaults
 }
 
 export default function Controls({
@@ -246,6 +247,7 @@ export default function Controls({
   onGenerate,
   loadSeed,
   randomSeed,
+  resetToDefaults,
 }: ControlsProps) {
   const rgb = hsvToRgb(params.startHue, params.startSat, params.startBri);
   const hex = rgbToHex(rgb);
@@ -264,13 +266,13 @@ export default function Controls({
 
   // Group slider configs by category
   const systemConfigs = sliderConfigs.filter(
-    (config) => config.category === "system"
+    (config) => config.category === "system",
   );
   const sizeConfigs = sliderConfigs.filter(
-    (config) => config.category === "size"
+    (config) => config.category === "size",
   );
   const appearanceConfigs = sliderConfigs.filter(
-    (config) => config.category === "appearance"
+    (config) => config.category === "appearance",
   );
 
   // Function to copy the current seed to clipboard
@@ -298,7 +300,7 @@ export default function Controls({
     } catch (error) {
       setSeedError(
         "Failed to decode seed: " +
-          (error instanceof Error ? error.message : "Unknown error")
+          (error instanceof Error ? error.message : "Unknown error"),
       );
     }
   };
@@ -367,7 +369,8 @@ export default function Controls({
 
       <button
         onClick={onGenerate}
-        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold">
+        className="mb-6 py-2 bg-green-500 hover:bg-green-600 rounded-lg font-semibold"
+      >
         Generate New (Enter)
       </button>
 
@@ -486,7 +489,7 @@ export default function Controls({
                 const newRgb = hsvToRgb(
                   newHue,
                   params.startSat,
-                  params.startBri
+                  params.startBri,
                 );
                 setHexInputValue(rgbToHex(newRgb));
               }}
@@ -521,7 +524,7 @@ export default function Controls({
                 const newRgb = hsvToRgb(
                   params.startHue,
                   newSat,
-                  params.startBri
+                  params.startBri,
                 );
                 setHexInputValue(rgbToHex(newRgb));
               }}
@@ -556,7 +559,7 @@ export default function Controls({
                 const newRgb = hsvToRgb(
                   params.startHue,
                   params.startSat,
-                  newBri
+                  newBri,
                 );
                 setHexInputValue(rgbToHex(newRgb));
               }}
@@ -641,12 +644,13 @@ export default function Controls({
         <div className="mb-3">
           <button
             onClick={copyCurrentSeed}
-            className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium">
+            className="w-full py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium"
+          >
             Copy Seed to Clipboard
           </button>
         </div>
 
-        <div className="mb-1">
+        <div className="mb-3">
           <label className="block text-sm mb-1">Import Seed:</label>
           <div className="flex items-center space-x-2">
             <input
@@ -658,13 +662,32 @@ export default function Controls({
             />
             <button
               onClick={handleSeedLoad}
-              className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded-lg">
+              className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded-lg"
+            >
               Load
             </button>
           </div>
           {seedError && (
             <p className="text-red-400 text-sm mt-1">{seedError}</p>
           )}
+        </div>
+
+        {/* Reset to Defaults Button */}
+        <div className="mt-2">
+          <button
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Reset all settings to defaults? This will discard your current configuration.",
+                )
+              ) {
+                resetToDefaults && resetToDefaults();
+              }
+            }}
+            className="w-full py-2 bg-red-600 hover:bg-red-700 rounded-lg font-medium"
+          >
+            Reset to Defaults
+          </button>
         </div>
       </div>
 
@@ -690,7 +713,8 @@ export default function Controls({
           a.download = "structure.svg";
           a.click();
           URL.revokeObjectURL(url);
-        }}>
+        }}
+      >
         Save as SVG
       </button>
     </aside>

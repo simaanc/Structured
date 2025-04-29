@@ -34,17 +34,25 @@ function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
   const saturationNormalized = s / 100;
   const valueBrightnessNormalized = v / 100;
   const chroma = valueBrightnessNormalized * saturationNormalized;
-  const secondaryComponent = chroma * (1 - Math.abs((hueDegreeNormalized % 2) - 1));
-  
-  let red = 0, green = 0, blue = 0;
-  
-  if (hueDegreeNormalized < 1) [red, green, blue] = [chroma, secondaryComponent, 0];
-  else if (hueDegreeNormalized < 2) [red, green, blue] = [secondaryComponent, chroma, 0];
-  else if (hueDegreeNormalized < 3) [red, green, blue] = [0, chroma, secondaryComponent];
-  else if (hueDegreeNormalized < 4) [red, green, blue] = [0, secondaryComponent, chroma];
-  else if (hueDegreeNormalized < 5) [red, green, blue] = [secondaryComponent, 0, chroma];
+  const secondaryComponent =
+    chroma * (1 - Math.abs((hueDegreeNormalized % 2) - 1));
+
+  let red = 0,
+    green = 0,
+    blue = 0;
+
+  if (hueDegreeNormalized < 1)
+    [red, green, blue] = [chroma, secondaryComponent, 0];
+  else if (hueDegreeNormalized < 2)
+    [red, green, blue] = [secondaryComponent, chroma, 0];
+  else if (hueDegreeNormalized < 3)
+    [red, green, blue] = [0, chroma, secondaryComponent];
+  else if (hueDegreeNormalized < 4)
+    [red, green, blue] = [0, secondaryComponent, chroma];
+  else if (hueDegreeNormalized < 5)
+    [red, green, blue] = [secondaryComponent, 0, chroma];
   else [red, green, blue] = [chroma, 0, secondaryComponent];
-  
+
   const brightnessMatch = valueBrightnessNormalized - chroma;
   return [
     Math.round((red + brightnessMatch) * 255),
@@ -64,7 +72,7 @@ export default class LSystem {
   protected startLength: number;
   protected params?: Params;
   protected randomFunc: () => number; // Seeded random function
-  
+
   // L-System production rules for each variable
   private ruleForW: string = "";
   private ruleForX: string = "";
@@ -74,7 +82,7 @@ export default class LSystem {
   constructor(config: LSystemConfig = {}) {
     this.params = config.params;
     this.randomFunc = config.randomFunc || Math.random; // Use provided random or default
-    
+
     if (this.params) {
       // Initialize with parametric L-System values from UI controls
       this.axiom = this.generateInitialAxiom(this.params.axiomAmount);
@@ -84,7 +92,9 @@ export default class LSystem {
     } else {
       // Initialize with base LSystem parameters
       this.axiom = config.axiom ?? INSTRUCTION.DRAW_FORWARD;
-      this.rule = config.rule ?? `${INSTRUCTION.DRAW_FORWARD}${INSTRUCTION.TURN_RIGHT}${INSTRUCTION.DRAW_FORWARD}${INSTRUCTION.TURN_LEFT}${INSTRUCTION.DRAW_FORWARD}`;
+      this.rule =
+        config.rule ??
+        `${INSTRUCTION.DRAW_FORWARD}${INSTRUCTION.TURN_RIGHT}${INSTRUCTION.DRAW_FORWARD}${INSTRUCTION.TURN_LEFT}${INSTRUCTION.DRAW_FORWARD}`;
       this.startLength = config.startLength ?? 190;
       this.theta = this.degreesToRadians(config.thetaDeg ?? 120);
     }
@@ -101,7 +111,9 @@ export default class LSystem {
   private generateInitialAxiom(branchCount: number): string {
     // Creates a starting axiom with multiple branches like "[X]++[X]++[X]++"
     return Array(branchCount)
-      .fill(`${INSTRUCTION.SAVE_STATE}${INSTRUCTION.VAR_X}${INSTRUCTION.RESTORE_STATE}${INSTRUCTION.TURN_RIGHT}${INSTRUCTION.TURN_RIGHT}`)
+      .fill(
+        `${INSTRUCTION.SAVE_STATE}${INSTRUCTION.VAR_X}${INSTRUCTION.RESTORE_STATE}${INSTRUCTION.TURN_RIGHT}${INSTRUCTION.TURN_RIGHT}`,
+      )
       .join("");
   }
 
@@ -123,8 +135,8 @@ export default class LSystem {
     while (this.generations < generationCount) {
       // Simple single-rule replacement for base LSystem
       this.production = this.production.replace(
-        new RegExp(INSTRUCTION.DRAW_FORWARD, "g"), 
-        this.rule
+        new RegExp(INSTRUCTION.DRAW_FORWARD, "g"),
+        this.rule,
       );
       // No scaling by default
       this.generations++;
@@ -134,7 +146,7 @@ export default class LSystem {
   private simulateComplex(generationCount: number) {
     while (this.generations < generationCount) {
       let nextProduction = "";
-      
+
       // Apply the production rules to each character
       for (const currentSymbol of this.production) {
         switch (currentSymbol) {
@@ -156,7 +168,7 @@ export default class LSystem {
             break;
         }
       }
-      
+
       this.production = nextProduction;
       this.generations++;
     }
@@ -164,21 +176,33 @@ export default class LSystem {
 
   private generateRules() {
     if (!this.params) return;
-    
+
     const availableSymbols = RandomString.structure;
     // Pass the seeded random function to RandomString
-    const shortRandomString = new RandomString(2, availableSymbols, this.randomFunc);
-    const mediumRandomString = new RandomString(3, availableSymbols, this.randomFunc);
-    const longRandomString = new RandomString(4, availableSymbols, this.randomFunc);
+    const shortRandomString = new RandomString(
+      2,
+      availableSymbols,
+      this.randomFunc,
+    );
+    const mediumRandomString = new RandomString(
+      3,
+      availableSymbols,
+      this.randomFunc,
+    );
+    const longRandomString = new RandomString(
+      4,
+      availableSymbols,
+      this.randomFunc,
+    );
 
     // Generate rules using the helper method to convert string patterns to instruction constants
-    
+
     // Raw rule templates using traditional L-system notation
     const wRuleTemplate = `${shortRandomString.nextString()}++${mediumRandomString.nextString()}${shortRandomString.nextString()}[${mediumRandomString.nextString()}${shortRandomString.nextString()}]++`;
     const xRuleTemplate = `+YF${longRandomString.nextString()}[${shortRandomString.nextString()}${shortRandomString.nextString()}${longRandomString.nextString()}]+`;
     const yRuleTemplate = `-WF${longRandomString.nextString()}[${longRandomString.nextString()}${longRandomString.nextString()}]-`;
     const zRuleTemplate = `--YF+^+WF[+ZF++++XF]--XF`;
-    
+
     // Convert the templates to use instruction constants
     this.ruleForW = this.createRuleString(wRuleTemplate);
     this.ruleForX = this.createRuleString(xRuleTemplate);
@@ -186,7 +210,11 @@ export default class LSystem {
     this.ruleForZ = this.createRuleString(zRuleTemplate);
   }
 
-  render(context: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) {
+  render(
+    context: CanvasRenderingContext2D,
+    canvasWidth: number,
+    canvasHeight: number,
+  ) {
     if (!this.params) {
       console.error("Cannot render without params");
       return;
@@ -196,10 +224,14 @@ export default class LSystem {
     context.clearRect(0, 0, canvasWidth, canvasHeight);
 
     // Auto-fit: scale to fit 2×startLength in the smaller dimension
-    const scaleFactor = Math.min(canvasWidth, canvasHeight) / (this.startLength * 2);
+    const scaleFactor =
+      Math.min(canvasWidth, canvasHeight) / (this.startLength * 2);
     context.save();
     context.scale(scaleFactor, scaleFactor);
-    context.translate(canvasWidth / (2 * scaleFactor), canvasHeight / (2 * scaleFactor));
+    context.translate(
+      canvasWidth / (2 * scaleFactor),
+      canvasHeight / (2 * scaleFactor),
+    );
 
     context.lineWidth = params.strokeWeight;
 
@@ -210,48 +242,56 @@ export default class LSystem {
     const baseLength = this.startLength;
 
     // Process each character in the production, limited by complexity parameter
-    for (let i = 0; i < Math.min(this.production.length, params.complexity); i++) {
+    for (
+      let i = 0;
+      i < Math.min(this.production.length, params.complexity);
+      i++
+    ) {
       const currentSymbol = this.production[i];
 
       // Apply color jittering if enabled
       if (params.lerpFrequency > 0) {
         [currentHue, currentSaturation, currentBrightness] = this.jitterColors(
-          params.lerpFrequency, 
-          currentHue, 
-          currentSaturation, 
-          currentBrightness
+          params.lerpFrequency,
+          currentHue,
+          currentSaturation,
+          currentBrightness,
         );
       }
 
       // Set stroke and fill colors based on current HSV values
-      const [red, green, blue] = hsvToRgb(currentHue, currentSaturation, currentBrightness);
+      const [red, green, blue] = hsvToRgb(
+        currentHue,
+        currentSaturation,
+        currentBrightness,
+      );
       context.strokeStyle = `rgba(${red},${green},${blue},${params.alpha / 255})`;
       context.fillStyle = `rgba(${red},${green},${blue},${params.opacity / 255})`;
 
       // Calculate shape dimensions with random variation
       const sizeFactor = this.calculateRandomSizeFactor(
-        params.minSizeMultiplier, 
-        params.maxSizeMultiplier
+        params.minSizeMultiplier,
+        params.maxSizeMultiplier,
       );
-      
+
       const width = baseLength * sizeFactor;
       const height = this.calculateHeight(
-        width, 
-        params.heightRatio, 
-        params.widthRatio, 
-        baseLength, 
-        sizeFactor
+        width,
+        params.heightRatio,
+        params.widthRatio,
+        baseLength,
+        sizeFactor,
       );
 
       // Process the current symbol in the production
       stackDepth = this.processSymbol(
-        context, 
-        currentSymbol, 
-        params, 
-        baseLength, 
-        width, 
+        context,
+        currentSymbol,
+        params,
+        baseLength,
+        width,
         height,
-        stackDepth
+        stackDepth,
       );
     }
 
@@ -260,7 +300,7 @@ export default class LSystem {
       context.restore();
       stackDepth--;
     }
-    
+
     context.restore();
   }
 
@@ -284,39 +324,49 @@ export default class LSystem {
   }
 
   private jitterColors(
-    jitterAmount: number, 
-    currentHue: number, 
-    currentSaturation: number, 
-    currentBrightness: number
+    jitterAmount: number,
+    currentHue: number,
+    currentSaturation: number,
+    currentBrightness: number,
   ): [number, number, number] {
     // Apply random variations to color values using seeded random
-    const newHue = (currentHue + (this.randomFunc() * 2 - 1) * jitterAmount + 360) % 360;
+    const newHue =
+      (currentHue + (this.randomFunc() * 2 - 1) * jitterAmount + 360) % 360;
     const newSaturation = Math.max(
       0,
-      Math.min(100, currentSaturation + (this.randomFunc() * 2 - 1) * jitterAmount)
+      Math.min(
+        100,
+        currentSaturation + (this.randomFunc() * 2 - 1) * jitterAmount,
+      ),
     );
     const newBrightness = Math.max(
       0,
-      Math.min(100, currentBrightness + (this.randomFunc() * 2 - 1) * jitterAmount)
+      Math.min(
+        100,
+        currentBrightness + (this.randomFunc() * 2 - 1) * jitterAmount,
+      ),
     );
-    
+
     return [newHue, newSaturation, newBrightness];
   }
 
-  private calculateRandomSizeFactor(minMultiplier: number, maxMultiplier: number): number {
+  private calculateRandomSizeFactor(
+    minMultiplier: number,
+    maxMultiplier: number,
+  ): number {
     // Use seeded random
     return this.randomFunc() * (maxMultiplier - minMultiplier) + minMultiplier;
   }
 
   private calculateHeight(
-    width: number, 
-    heightRatio: number, 
-    widthRatio: number, 
-    baseLength: number, 
-    sizeFactor: number
+    width: number,
+    heightRatio: number,
+    widthRatio: number,
+    baseLength: number,
+    sizeFactor: number,
   ): number {
-    return heightRatio >= 0 
-      ? width * (heightRatio / widthRatio) 
+    return heightRatio >= 0
+      ? width * (heightRatio / widthRatio)
       : baseLength * sizeFactor;
   }
 
@@ -327,7 +377,7 @@ export default class LSystem {
     baseLength: number,
     width: number,
     height: number,
-    stackDepth: number
+    stackDepth: number,
   ): number {
     switch (symbol) {
       case INSTRUCTION.DRAW_FORWARD:
@@ -353,7 +403,7 @@ export default class LSystem {
         break;
       // Ignore other symbols (digits, etc.)
     }
-    
+
     return stackDepth;
   }
 
@@ -362,7 +412,7 @@ export default class LSystem {
     params: Params,
     baseLength: number,
     width: number,
-    height: number
+    height: number,
   ) {
     // Draw line if enabled
     if (params.toggleFlags.line) {
@@ -381,7 +431,12 @@ export default class LSystem {
 
     // Draw triangle if enabled
     if (params.toggleFlags.triangle) {
-      this.drawTriangle(context, width, height, params.toggleFlags.triangleFill);
+      this.drawTriangle(
+        context,
+        width,
+        height,
+        params.toggleFlags.triangleFill,
+      );
     }
 
     // Draw hexagon if enabled
@@ -403,21 +458,21 @@ export default class LSystem {
   }
 
   private drawSquare(
-    context: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    fill: boolean
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    fill: boolean,
   ) {
-    fill 
-      ? context.fillRect(0, 0, width, height) 
+    fill
+      ? context.fillRect(0, 0, width, height)
       : context.strokeRect(0, 0, width, height);
   }
 
   private drawCircle(
-    context: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    fill: boolean
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    fill: boolean,
   ) {
     context.save();
     // Scale X so a unit circle becomes ellipse w×h
@@ -429,10 +484,10 @@ export default class LSystem {
   }
 
   private drawTriangle(
-    context: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    fill: boolean
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    fill: boolean,
   ) {
     context.beginPath();
     context.moveTo(width / 2, 0);
@@ -443,32 +498,32 @@ export default class LSystem {
   }
 
   private drawHexagon(
-    context: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    fill: boolean
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    fill: boolean,
   ) {
     const angleIncrement = Math.PI / 3; // 60 degrees in radians
     context.beginPath();
-    
+
     for (let vertex = 0; vertex < 6; vertex++) {
       const x = (width / 2) * Math.cos(angleIncrement * vertex);
       const y = (height / 2) * Math.sin(angleIncrement * vertex);
       vertex === 0 ? context.moveTo(x, y) : context.lineTo(x, y);
     }
-    
+
     context.closePath();
     fill ? context.fill() : context.stroke();
   }
 
   private drawCube(
-    context: CanvasRenderingContext2D, 
-    width: number, 
-    height: number, 
-    fill: boolean
+    context: CanvasRenderingContext2D,
+    width: number,
+    height: number,
+    fill: boolean,
   ) {
     const cosine60 = Math.cos(Math.PI / 3);
-    
+
     // Draw top face
     context.beginPath();
     context.moveTo(width / 2, 0);
@@ -477,7 +532,7 @@ export default class LSystem {
     context.lineTo(0, (height / 2) * cosine60);
     context.closePath();
     fill ? context.fill() : context.stroke();
-    
+
     // Draw right face
     context.beginPath();
     context.moveTo(width, (height / 2) * cosine60);
@@ -486,7 +541,7 @@ export default class LSystem {
     context.lineTo(width / 2, height / 2);
     context.closePath();
     fill ? context.fill() : context.stroke();
-    
+
     // Draw left face
     context.beginPath();
     context.moveTo(width / 2, height);

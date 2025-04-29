@@ -10,7 +10,11 @@ interface CanvasProps {
   randomSeed?: string; // Add this to pass in the random seed
 }
 
-export default function StructuredCanvas({ params, trigger, randomSeed }: CanvasProps) {
+export default function StructuredCanvas({
+  params,
+  trigger,
+  randomSeed,
+}: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
